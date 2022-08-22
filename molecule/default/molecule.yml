@@ -1,0 +1,26 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    # Can be any supported provider (virtualbox, parallels, libvirt, etc)
+    # Defaults to virtualbox
+    name: libvirt
+platforms:
+  - name: instance
+    box: debian/bookworm64
+    box_url:
+    memory: 2048
+    cpus: 2
+    interfaces:
+      - network_name: private_network
+        type: static
+        ip: 192.168.123.5
+provisioner:
+  name: ansible
+#lint: |
+#  yamllint .
+#  ansible-lint
+verifier:
+  name: ansible

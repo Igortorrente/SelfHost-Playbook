@@ -1,0 +1,6 @@
+---
+- name: Converge
+  hosts: all
+
+- name: Test the main playbook.
+  import_playbook: ../../main.yml

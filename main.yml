@@ -1,0 +1,8 @@
+---
+- name: Main playbook.
+  hosts: all
+
+  tasks:
+    - name: Test echo command.
+      ansible.builtin.command: echo Test
+      changed_when: false
