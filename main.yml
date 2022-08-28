@@ -2,5 +2,8 @@
 - name: Main playbook.
   hosts: all
 
+  vars_files:
+    user_vars.yaml
+
   roles:
     - role: roles/system/basic/

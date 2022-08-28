@@ -1,0 +1,5 @@
+---
+# List of optional roles.
+# If you set as false, the role and related tasks in other roles will not
+# be executed.
+#optional_roles:
