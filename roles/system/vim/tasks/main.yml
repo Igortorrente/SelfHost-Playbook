@@ -1,0 +1,40 @@
+---
+- name: Ensure vim is installed.
+  ansible.builtin.apt:
+    pkg: vim
+    state: present
+  become: true
+
+- name: Ensure vim undo folder exists on root.
+  ansible.builtin.file:
+    path: /root/.var/vim-undo-dir
+    owner: root
+    group: root
+    mode: 0700
+    state: directory
+  become: true
+
+- name: Ensure the vim configs are inplace on root.
+  ansible.builtin.unarchive:
+    src: files/vim.tar.xz
+    dest: /root
+    owner: root
+    group: root
+  become: true
+
+- name: Ensure vim undo folder exists on user.
+  ansible.builtin.file:
+    path: "{{ ansible_user_dir }}/.var/vim-undo-dir"
+    owner: "{{ ansible_user_uid }}"
+    group: "{{ ansible_user_gid }}"
+    state: directory
+    mode: 0700
+  become: true
+
+- name: Ensure the vim configs are inplace on user.
+  ansible.builtin.unarchive:
+    src: files/vim.tar.xz
+    dest: "{{ ansible_user_dir }}"
+    owner: "{{ ansible_user_uid }}"
+    group: "{{ ansible_user_gid }}"
+  become: true
