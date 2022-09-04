@@ -11,6 +11,10 @@
   ansible.builtin.set_fact:
     server:
       timezone: "{{ server['timezone'] | default(tz['content'] | b64decode | trim) }}"
+      network:
+        domain_name: "{{ server['network']['domain_name'] | default('example.com') }}"
+        ipv4: "{{ server['network']['ipv4'] | default(server_ipv4) }}"
+        ipv6: "{{ server['network']['ipv6'] | default(server_ipv6) }}"
 
 - name: Set the containers fact.
   ansible.builtin.set_fact:
@@ -44,3 +48,10 @@
         enabled: "{{ nginx_proxy['certbot']['enabled'] | default(true) }}"
         container_version: "{{ nginx_proxy['certbot']['container_version'] | default('1.23') }}"
         email: "{{ nginx_proxy['certbot']['email'] }}"
+
+- name: Sets bind dns fact.
+  ansible.builtin.set_fact:
+    dns:
+      enabled: "{{ dns['enabled'] | default(false) }}"
+      container_version: "{{ dns['container_version'] | default('9.20') }}"
+      AAAA_records: "{{ dns['AAAA_records'] | default(true) }}"

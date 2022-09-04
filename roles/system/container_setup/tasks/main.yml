@@ -42,6 +42,7 @@
     - "{{ containers['cache_dir'] }}"
     - "{{ containers['config_dir'] }}"
     - "{{ containers['data_dir'] }}"
+    - "{{ containers['logs_dir'] }}"
 
 - name: Ensure docker dependecies are installed first.
   ansible.builtin.apt:

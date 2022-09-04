@@ -15,6 +15,20 @@ server:
     # If not set, the containers will use the server timezone.
     # Valid values: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: Etc/UTC
+    network:
+        # The domain of the server. This will be used as a base to the
+        # services subdomains.
+        domain_name: example.com
+        # The IPV4 of the server. The IP address that will be used to expose
+        # the server to the internet (if the server have direct access to it)
+        # or local network.
+        # You can leave it empty and an IP will be automaticaly picked.
+        # ** It's highly recommended to set this variable **
+        #ipv4: 170.187.134.150
+        # The IPV6 of the server.
+        # You can leave it empty and an IP will be automaticaly picked.
+        # ** It's highly recommended to set this variable **
+        #ipv6: 2100:3c0b::f0fc:93af:fe3e:629a
 
 # General containers config
 containers:
@@ -56,6 +70,15 @@ redis:
 nginx_proxy:
     # https://hub.docker.com/_/nginx
     container_version: 1.29
+
+# bind9 DNS
+dns:
+    # This will be required by the mail server and it can work standalone.
+    enabled: false
+    # https://hub.docker.com/r/internetsystemsconsortium/bind9/tags
+    container_version: '9.20'
+    # Enable/disables the IPv6 record to the services
+    AAAA_records: true
 
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not

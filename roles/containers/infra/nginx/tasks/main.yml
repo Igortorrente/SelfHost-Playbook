@@ -33,6 +33,7 @@
   loop:
     - { src: nginx_proxy/nginx.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/", enabled: true }
     - { src: nginx_proxy/conf.d/default.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: true }
+    - { src: nginx_proxy/conf.d/bind9.stream.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: "{{ dns['enabled'] }}" }
   when: item.enabled|bool
 
 - name: Set fact with nginx-proxy container ports.
@@ -40,6 +41,8 @@
     proxy_ports: "{{ proxy_ports | default([]) + [item.port] }}"
   loop:
     - { port: '80:80', enabled: true }
+    - { port: '53:53/tcp', enabled: "{{ dns['enabled'] }}" }
+    - { port: '53:53/udp', enabled: "{{ dns['enabled'] }}" }
   when: item.enabled|bool
 
 - name: Set fact with nginx-proxy mount points.

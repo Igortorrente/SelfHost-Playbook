@@ -1,0 +1,98 @@
+---
+- name: Create all bind9 folders.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: 53
+    group: 53
+    state: directory
+    mode: 0700
+  become_method: containers.podman.podman_unshare
+  become: true
+  loop:
+    - "{{ containers['data_dir'] }}/bind9/"
+    - "{{ containers['cache_dir'] }}/bind9"
+    - "{{ containers['logs_dir'] }}/bind9"
+    - "{{ containers['config_dir'] }}/bind9/"
+
+- name: Copy all bind9 configs.
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: 53
+    group: 53
+    mode: 0600
+  become_method: containers.podman.podman_unshare
+  become: true
+  loop:
+    - { src: bind9.conf, dest: "{{ containers['config_dir'] }}/bind9/" }
+    - { src: db.domain.com, dest: "{{ containers['config_dir'] }}/bind9/db.{{ server['network']['domain_name'] }}" }
+    - { src: db.rev.domain.com, dest: "{{ containers['config_dir'] }}/bind9/db.rev.{{ server['network']['domain_name'] }}" }
+
+- name: Make sure the bind9 container is created and running.
+  community.docker.docker_container:
+    name: bind9
+    image: "internetsystemsconsortium/bind9:{{ dns['container_version'] }}"
+    networks:
+      - name: container-network
+        ipv4_address: "{{ containers_ipv4_addr_base }}.247"
+    ports:
+      - "{{ containers['loopback_network_address'] }}:10600:53/udp"
+      - "{{ containers['loopback_network_address'] }}:10600:53/tcp"
+    mounts:
+      - # bind9 config
+          source: "{{ containers['config_dir'] }}/bind9/bind9.conf"
+          target: /etc/bind/named.conf
+          read_only: true
+          type: bind
+      - # bind9 domain config
+          source: "{{ containers['config_dir'] }}/bind9/db.{{ server['network']['domain_name'] }}"
+          target: "/var/lib/bind/db.{{ server['network']['domain_name'] }}"
+          read_only: true
+          type: bind
+      - # bind9 reverse domain config
+          source: "{{ containers['config_dir'] }}/bind9/db.rev.{{ server['network']['domain_name'] }}"
+          target: "/var/lib/bind/db.rev.{{ server['network']['domain_name'] }}"
+          read_only: true
+          type: bind
+      - # bind9  keys
+          source: "{{ containers['data_dir'] }}/bind9/"
+          target: /var/lib/bind/
+          type: bind
+      - # bind9 cache
+          source: "{{ containers['cache_dir'] }}/bind9/"
+          target: /var/cache/bind
+          type: bind
+      - # bind9 logs
+          source: "{{ containers['logs_dir'] }}/bind9/"
+          target: /var/log/bind/
+          type: bind
+    env:
+      TZ:  "{{ server['timezone'] }}"
+    # To limit to 2 threads
+    command: -n 2 -u bind -f -c /etc/bind/named.conf -L /var/log/bind/bind9.log
+    # To enable debbug logs 
+    #command: -g -u bind -c /etc/bind/named.conf -L /var/log/bind/bind9.log
+    pull: yes
+    state: started
+    restart_policy: unless-stopped
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+
+- name: Waits for bind9.
+  ansible.builtin.wait_for:
+    host: "{{ containers['loopback_network_address'] }}"
+    port: 10600
+    sleep: 5
+    delay: 40
+    timeout: 90
+
+- name: Make /etc/resolv.conf is updated with the local dns server.
+  ansible.builtin.lineinfile:
+    path: /etc/resolv.conf
+    line: "nameserver {{ server['network']['ipv4'] }}"
+    insertbefore: BOF
+    state: present
+  become: true
+  # For some reason if we enable this in the molecule test environment
+  # We can't build some container images
+  # TODO: fix this properly and remove this workarround
+  when: testing_env is not defined
