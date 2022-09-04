@@ -17,3 +17,5 @@
       when: optional_roles['zsh']
 
     - role: roles/system/container_setup/
+
+    - role: roles/containers/infra/postgres/

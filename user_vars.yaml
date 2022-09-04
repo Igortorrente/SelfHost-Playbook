@@ -34,6 +34,17 @@ containers:
     # Containers network subnet
     subnet: 192.168.203.0/24
 
+# Postgres configs "struct"
+postgres:
+    # https://hub.docker.com/_/postgres
+    container_version: 16-bookworm
+    # Postgres superuser name.
+    admin_user: postgres
+    # The password for the postgres superuser.
+    #admin_passwd:
+    # The default database name.
+    admin_db: main
+
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
 # be executed.

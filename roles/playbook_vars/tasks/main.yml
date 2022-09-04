@@ -1,4 +1,7 @@
 ---
+- name: Workarround to ansible lazy evaluation.
+  ansible.builtin.include_tasks: workaround.yml
+
 - name: Get get the timezone information.
   ansible.builtin.slurp:
     src: "/etc/timezone"
@@ -17,3 +20,11 @@
       config_dir: "{{ containers['config_dir'] | default(ansible_user_dir + '/containers_config') }}"
       loopback_network_address: "{{ containers['loopback_network_address'] | default('10.0.0.1') }}"
       subnet: "{{ containers['subnet'] | default('192.168.203.0/24') }}"
+
+- name: Generates postgres password if needed.
+  ansible.builtin.set_fact:
+    postgres:
+      container_version: "{{ postgres['container_version'] | default('16-bookworm') }}"
+      admin_user: "{{ postgres['admin_user'] | default('postgres') }}"
+      admin_passwd: "{{ postgres['admin_passwd'] | default(postgres_passwd) }}"
+      admin_db: "{{ postgres['admin_db'] | default('main') }}"
