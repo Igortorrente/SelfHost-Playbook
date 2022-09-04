@@ -4,3 +4,5 @@
 
 - name: Test the main playbook.
   import_playbook: ../../main.yml
+  vars:
+    password_gen: "{{ lookup('ansible.builtin.password', '/dev/null length=12 chars=ascii_letters,digits', seed='MgUCBPCvtwk') }}"

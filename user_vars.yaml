@@ -1,4 +1,8 @@
 ---
+# Default password length for the password generated automatically.
+# Default value: 32
+#password_length:
+
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
 # be executed.

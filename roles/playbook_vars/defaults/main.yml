@@ -1,0 +1,3 @@
+---
+password_length: 32
+password_gen: "{{ lookup('ansible.builtin.password', '/dev/null length={{ password_length }} chars=ascii_letters,digits') }}"

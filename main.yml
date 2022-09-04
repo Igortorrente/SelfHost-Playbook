@@ -6,6 +6,8 @@
     user_vars.yaml
 
   roles:
+    - role: roles/playbook_vars/
+
     - role: roles/system/basic/
 
     - role: roles/system/vim
