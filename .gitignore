@@ -1,0 +1,7 @@
+*.swp
+*.session.vim
+*.lvimrc
+roles/role_template/
+*venv/
+**/.yamllint
+config/
