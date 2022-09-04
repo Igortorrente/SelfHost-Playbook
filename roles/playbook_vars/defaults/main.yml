@@ -3,3 +3,6 @@ password_length: 32
 password_gen: "{{ lookup('ansible.builtin.password', '/dev/null length={{ password_length }} chars=ascii_letters,digits') }}"
 
 containers_ipv4_addr_base: "{{ containers['subnet'] | ansible.utils.ipaddr('network') | regex_replace('.0$', '') }}"
+
+server_ipv4: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+server_ipv6: "{{ ansible_default_ipv6.address | default(ansible_all_ipv6_addresses[0]) }}"
