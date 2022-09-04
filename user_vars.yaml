@@ -45,6 +45,12 @@ postgres:
     # The default database name.
     admin_db: main
 
+redis:
+    # https://hub.docker.com/_/redis
+    container_version: 8-bookworm
+    # The password for the redis user.
+    #password:
+
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
 # be executed.

@@ -2,3 +2,7 @@
 - name: Var postgres_passwd.
   ansible.builtin.set_fact:
     postgres_passwd: "{{ password_gen }}"
+
+- name: Var redis_password.
+  ansible.builtin.set_fact:
+    redis_password: "{{ password_gen }}"
