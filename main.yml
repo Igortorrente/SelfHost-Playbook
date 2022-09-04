@@ -10,3 +10,6 @@
 
     - role: roles/system/vim
       when: optional_roles['vim']
+
+    - role: roles/system/zsh
+      when: optional_roles['zsh']

@@ -4,3 +4,4 @@
 # be executed.
 optional_roles:
     vim: true
+    zsh: true

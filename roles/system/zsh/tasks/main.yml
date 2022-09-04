@@ -1,0 +1,36 @@
+---
+- name: Ensure zsh is installed.
+  ansible.builtin.apt:
+    pkg: zsh
+    state: present
+  become: true
+
+- name: Ensure the zsh configs is inplace on root.
+  ansible.builtin.unarchive:
+    src: files/zsh.tar.xz
+    dest: /root
+    owner: root
+    group: root
+  become: true
+
+- name: Ensure zsh is the default shell for the root user.
+  ansible.builtin.user:
+    name: root
+    shell: /usr/bin/zsh
+    state: present
+  become: true
+
+- name: Ensure the zsh configs is inplace on user.
+  ansible.builtin.unarchive:
+    src: files/zsh.tar.xz
+    dest: "{{ ansible_user_dir }}"
+    owner: "{{ ansible_user_uid }}"
+    group: "{{ ansible_user_gid }}"
+  become: true
+
+- name: Ensure zsh is the default shell for the user.
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    shell: /usr/bin/zsh
+    state: present
+  become: true
