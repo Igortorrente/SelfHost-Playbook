@@ -1,3 +1,5 @@
 ---
 password_length: 32
 password_gen: "{{ lookup('ansible.builtin.password', '/dev/null length={{ password_length }} chars=ascii_letters,digits') }}"
+
+containers_ipv4_addr_base: "{{ containers['subnet'] | ansible.utils.ipaddr('network') | regex_replace('.0$', '') }}"

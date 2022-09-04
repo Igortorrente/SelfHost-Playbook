@@ -1,0 +1,102 @@
+---
+- name: Ensure Psycopg is installed.
+  ansible.builtin.apt:
+    pkg: python3-psycopg2
+    state: present
+  become: true
+
+- name: Create postgres data directory if it don't exist yet.
+  ansible.builtin.file:
+    path: "{{ containers['data_dir'] }}/postgres/"
+    state: directory
+    mode: 0700
+
+- name: Create postgres config directory if it don't exist yet.
+  ansible.builtin.file:
+    path: "{{ containers['config_dir'] }}/postgres/"
+    owner: 999
+    group: 999
+    state: directory
+    mode: 0700
+  become_method: containers.podman.podman_unshare
+  become: true
+
+- name: Ensure postgres config is inplace.
+  ansible.builtin.copy:
+    src: files/postgres.conf
+    dest: "{{ containers['config_dir'] }}/postgres/"
+    owner: 999
+    group: 999
+    mode: 0640
+  become_method: containers.podman.podman_unshare
+  become: true
+
+- name: The first run to setup the default database and admin credentials.
+  community.docker.docker_container:
+    name: postgres
+    image: "postgres:{{ postgres['container_version'] }}"
+    ports:
+      - "{{ containers['loopback_network_address'] }}:5432:5432/tcp"
+    mounts:
+      - # postgres config
+          source: "{{ containers['config_dir'] }}/postgres/postgres.conf"
+          target: /etc/postgresql/postgresql.conf
+          read_only: true
+          type: bind
+      - # postgres data
+          source: "{{ containers['data_dir'] }}/postgres/"
+          target: /var/lib/postgresql/data
+          type: bind
+    pull: yes
+    state: started
+    auto_remove: true
+    env:
+      POSTGRES_USER: "{{ postgres['admin_user'] }}"
+      POSTGRES_DB: "{{ postgres['admin_db'] }}"
+      POSTGRES_PASSWORD: "{{ postgres['admin_passwd'] }}"
+      TZ: "{{ server['timezone'] }}"
+    comparisons:
+      '*': ignore  # by default, ignore *all* options (including image)
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+
+- name: Waits for postgres.
+  ansible.builtin.wait_for:
+    host: "{{ containers['loopback_network_address'] }}"
+    port: 5432
+    delay: 5
+    sleep: 3
+    timeout: 45
+
+- name: Make sure the postgres container is created and running without exposing the credentials.
+  community.docker.docker_container:
+    name: postgres
+    image: "postgres:{{ postgres['container_version'] }}"
+    networks:
+      - name: container-network
+        ipv4_address: "{{ containers_ipv4_addr_base }}.245"
+    ports:
+      - "{{ containers['loopback_network_address'] }}:5432:5432/tcp"
+    mounts:
+      - # postgres config
+          source: "{{ containers['config_dir'] }}/postgres/postgres.conf"
+          target: /etc/postgresql/postgresql.conf
+          read_only: true
+          type: bind
+      - # postgres database
+          source: "{{ containers['data_dir'] }}/postgres/"
+          target: /var/lib/postgresql/data
+          type: bind
+    env:
+      TZ: "{{ server['timezone'] }}"
+    state: started
+    restart_policy: unless-stopped
+    command: -c shared_buffers=256MB -c max_connections=200
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+
+- name: Waits for postgres.
+  ansible.builtin.wait_for:
+    host: "{{ containers['loopback_network_address'] }}"
+    port: 5432
+    delay: 5
+    sleep: 3
+    timeout: 45
