@@ -28,3 +28,8 @@
       admin_user: "{{ postgres['admin_user'] | default('postgres') }}"
       admin_passwd: "{{ postgres['admin_passwd'] | default(postgres_passwd) }}"
       admin_db: "{{ postgres['admin_db'] | default('main') }}"
+
+- name: Set Redis fact.
+  ansible.builtin.set_fact:
+    redis:
+      container_version: "{{ redis['container_version'] | default('6-bookworm') }}"

@@ -1,0 +1,50 @@
+---
+- name: Create all redis folders.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: 998
+    group: 998
+    state: directory
+    mode: 0700
+  become_method: containers.podman.podman_unshare
+  become: true
+  loop:
+    - "{{ containers['cache_dir'] }}/redis"
+    - "{{ containers['config_dir'] }}/redis/"
+
+- name: Ensure redis config is inplace.
+  ansible.builtin.copy:
+    src: files/redis.conf
+    dest: "{{ containers['config_dir'] }}/redis/"
+    owner: 998
+    group: 998
+    mode: 0640
+  become_method: containers.podman.podman_unshare
+  become: true
+
+- name: Make sure the Redis container is running
+  community.docker.docker_container:
+    name: redis
+    image: "redis:{{ redis['container_version'] }}"
+    networks:
+      - name: container-network
+        ipv4_address: "{{ containers_ipv4_addr_base }}.246"
+    mounts:
+      - # redis cache
+          consistency: cached
+          source: "{{ containers['cache_dir'] }}/redis"
+          target: /data
+          type: bind
+      - # redis conf
+          source: "{{ containers['config_dir'] }}/redis/redis.conf"
+          target: /usr/local/etc/redis/redis.conf
+          read_only: true
+          type: bind
+    env:
+      TZ: "{{ server['timezone'] }}"
+    user: 998:998
+    pull: yes
+    state: started
+    restart_policy: unless-stopped
+    command: redis-server --save 180 1 /usr/local/etc/redis/redis.conf
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock

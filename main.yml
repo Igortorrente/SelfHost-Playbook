@@ -18,4 +18,6 @@
 
     - role: roles/system/container_setup/
 
+    - role: roles/containers/infra/redis/
+
     - role: roles/containers/infra/postgres/
