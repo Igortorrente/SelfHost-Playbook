@@ -1,0 +1,19 @@
+---
+- name: Update grub
+  become: true
+  ansible.builtin.command: update-grub2
+
+- name: Enable linger
+  ansible.builtin.command: "loginctl enable-linger {{ services_user | default(ansible_user_id) }}"
+  become: true
+
+- name: Reboot the machine
+  ansible.builtin.reboot:
+  become: true
+
+- name: Restart docker deamon
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted
+    scope: system
+  become: true

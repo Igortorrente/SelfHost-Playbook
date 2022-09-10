@@ -1,0 +1,150 @@
+---
+- name: Ensure some kernel parameters used by docker will be correct on next boot.
+  ansible.builtin.copy:
+    src: files/container.conf
+    dest: /etc/sysctl.d/container.conf
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+
+- name: Make sure the cgroup kernel flag will be in the grub.
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="(?!systemd\.unified_cgroup_hierarchy=[01])(.*)"'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="systemd.unified_cgroup_hierarchy=1 \1"'
+    backrefs: yes
+    state: present
+  notify:
+    - Update grub
+    - Reboot the machine
+  become: true
+
+- name: Copy the local network Systemd configuration file.
+  ansible.builtin.template:
+    src: lo.network
+    dest: /etc/systemd/network/lo.network
+    owner: systemd-network
+    group: systemd-network
+    mode: 0600
+  notify: Reboot the machine
+  become: true
+
+- name: Flush handlers.
+  ansible.builtin.meta: flush_handlers
+
+- name: Create containers folders.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0740
+  loop:
+    - "{{ containers['cache_dir'] }}"
+    - "{{ containers['config_dir'] }}"
+    - "{{ containers['data_dir'] }}"
+
+- name: Ensure docker dependecies are installed first.
+  ansible.builtin.apt:
+    pkg:
+      - rootlesskit
+      - uidmap
+      - slirp4netns
+      - fuse-overlayfs
+      - dbus-user-session
+    state: present
+  become: true
+
+- name: Run and enable dbus for user.
+  ansible.builtin.systemd:
+    name: dbus
+    state: started
+    enabled: true
+    scope: user
+
+- name: Ensure docker is installed.
+  ansible.builtin.apt:
+    pkg:
+      - docker.io
+      - python3-docker
+    state: present
+  become: true
+
+- name: Waits docker socket.
+  ansible.builtin.wait_for:
+    path: /var/run/docker.sock
+    delay: 30
+    sleep: 5
+    timeout: 120
+  become: true
+
+- name: Create cgroup resource control folder.
+  ansible.builtin.file:
+    path: /etc/systemd/system/user@.service.d
+    state: directory
+    mode: 0751
+  become: true
+
+#https://github.com/containers/podman/blob/main/troubleshooting.md#26-running-containers-with-resource-limits-fails-with-a-permissions-error
+- name: Copy config to allow non-root users to have increased resource limit delegation permissions.
+  ansible.builtin.copy:
+    src: files/delegate.conf
+    dest: /etc/systemd/system/user@.service.d/delegate.conf
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+
+- name: Change docker deamon to enable ipv6 support.
+  ansible.builtin.template:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart docker deamon
+  become: true
+
+- name: Ensure docker rootless is working.
+  ansible.builtin.command:
+    cmd:  /usr/share/docker.io/contrib/dockerd-rootless-setuptool.sh install
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/share/docker.io/contrib/"
+  register: rootless
+  # Even though the script installs the docker rootless correctly, it tries
+  # to launch docker from the wrong folder. We can't trust the return value.
+  failed_when: >
+    ("Daemon has completed initialization" not in rootless.stdout) and
+    ("File already exists, skipping" not in rootless.stderr)
+  changed_when: '"File already exists, skipping" not in rootless.stderr'
+
+- name: Check if the user is lingering
+  ansible.builtin.stat:
+    path: "/var/lib/systemd/linger/{{ ansible_user_id }}"
+  notify: Enable linger
+  register: user_lingering
+  changed_when: not user_lingering.stat.exists
+
+- name: Ensure that DOCKER_HOST is correct in the .bashrc.
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_user_dir }}/.bashrc"
+    line: 'export DOCKER_HOST=unix:///run/user/$(id -u)/docker.sock'
+    insertafter: EOF
+
+- name: Create the default network for the services if it doesn't exist yet.
+  community.docker.docker_network:
+    name: container-network
+    ipam_config:
+      - subnet: "{{ containers['subnet'] }}"
+    state: present
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+
+- name: Flushed the handles before before setting up the containers
+  ansible.builtin.meta: flush_handlers
+
+- name: Ensure podman is installed.
+  ansible.builtin.apt:
+    pkg:
+      - podman
+    state: present
+    install_recommends: false
+  become: true

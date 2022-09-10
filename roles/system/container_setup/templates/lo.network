@@ -1,0 +1,8 @@
+[Match]
+Name=lo
+
+[Network]
+Description=Loopback interface with a adicional ip to containers.
+DHCP=no
+Address=127.0.0.1/8
+Address={{ containers['loopback_network_address'] }}/8

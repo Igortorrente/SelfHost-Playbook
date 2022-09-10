@@ -1,0 +1,5 @@
+{
+  "ipv6": true,
+  "fixed-cidr-v6": "{{ server['network']['ipv6'] | ansible.utils.ipaddr('network') }}/64",
+  "storage-driver": "fuse-overlayfs"
+}

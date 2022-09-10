@@ -3,6 +3,31 @@
 # Default value: 32
 #password_length:
 
+# Each major component have "struct" that contain all information
+# used by the roles to do their work.
+# They may contain options to change some specific behavior in the roles.
+# The present values are the default values and you can change
+# to meet your needs.
+# All options have default values, unless specified.
+
+# General containers config
+containers:
+    # Absolut path the folder that will contain all the data of the containers.
+    # This includes the database, configs, let's encrypt keys, netcloud data, etc.
+    # It's recomended that this folder to have some data integrity measures to
+    # protect the data(RAID 5 or 6).
+    data_dir: "{{ ansible_user_dir }}/containers_data"
+    # This folder will contain the cache used by some services.
+    cache_dir: "{{ ansible_user_dir }}/containers_cache"
+    # This folder will contain the config used by some services.
+    config_dir: "{{ ansible_user_dir }}/containers_config"
+    # This network is a second loopback interface used for some containers
+    # when they need expose any port to the host without exposing it outside
+    # the server.
+    loopback_network_address: 10.0.0.1
+    # Containers network subnet
+    subnet: 192.168.203.0/24
+
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
 # be executed.

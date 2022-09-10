@@ -15,3 +15,5 @@
 
     - role: roles/system/zsh
       when: optional_roles['zsh']
+
+    - role: roles/system/container_setup/

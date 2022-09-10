@@ -4,3 +4,9 @@
     update_cache: true
     cache_valid_time: 3600
   become: true
+
+- name: Ensures the systemd networkd is enabled.
+  ansible.builtin.systemd:
+    name: systemd-networkd.service
+    enabled: true
+  become: true

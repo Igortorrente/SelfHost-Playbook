@@ -1,2 +1,9 @@
 ---
-# Password generation
+- name: Set the containers fact.
+  ansible.builtin.set_fact:
+    containers:
+      data_dir: "{{ containers['data_dir'] | default(ansible_user_dir + '/containers_data') }}"
+      cache_dir: "{{ containers['cache_dir'] | default(ansible_user_dir + '/containers_cache') }}"
+      config_dir: "{{ containers['config_dir'] | default(ansible_user_dir + '/containers_config') }}"
+      loopback_network_address: "{{ containers['loopback_network_address'] | default('10.0.0.1') }}"
+      subnet: "{{ containers['subnet'] | default('192.168.203.0/24') }}"
