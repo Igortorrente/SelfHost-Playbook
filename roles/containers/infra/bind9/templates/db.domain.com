@@ -19,6 +19,10 @@ dns                  IN      A       {{ server['network']['ipv4'] }}
 home                 IN      A       {{ server['network']['ipv4'] }}
 www.home             IN      A       {{ server['network']['ipv4'] }}
 {% endif %}
+{% if keycloak['enabled'] is defined %}
+accounts             IN      A       {{ server['network']['ipv4'] }}
+www.account          IN      A       {{ server['network']['ipv4'] }}
+{% endif %}
 {% endif %}
 
 {% if server['network']['ipv6'] is defined and dns['AAAA_records'] is true %}
@@ -27,5 +31,9 @@ dns                  IN     AAAA     {{ server['network']['ipv6'] }}
 {% if homer['enabled'] is defined %}
 home                 IN     AAAA     {{ server['network']['ipv6'] }}
 www.home             IN     AAAA     {{ server['network']['ipv6'] }}
+{% endif %}
+{% if keycloak['enabled'] is defined %}
+accounts             IN     AAAA     {{ server['network']['ipv6'] }}
+www.accounts         IN     AAAA     {{ server['network']['ipv6'] }}
 {% endif %}
 {% endif %}
