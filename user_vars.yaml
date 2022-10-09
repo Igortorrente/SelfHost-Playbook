@@ -224,6 +224,8 @@ services_mail:
 
 nextcloud:
     enabled: true
+    # https://hub.docker.com/_/nextcloud
+    container_version: 32-fpm
     # The nextcloud postgres admin username. This user will be used
     # to setup and access the postgres database for nextcloud.
     postgres_user: nextcloud

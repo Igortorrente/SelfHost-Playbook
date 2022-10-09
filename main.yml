@@ -55,3 +55,6 @@
 
     - role: roles/containers/services/mailu/
       when: mailu['enabled']
+
+    - role: roles/containers/services/nextcloud
+      when: nextcloud['enabled']

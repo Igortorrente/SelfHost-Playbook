@@ -1,0 +1,88 @@
+---
+- name: Inspect a the custom nextcloud image.
+  community.docker.docker_image_info:
+    name: "{{ nextcloud_custom_img }}"
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: nextcloud_custom
+
+- name: Include nextcloud image build tasks.
+  ansible.builtin.include_tasks: image_build.yml
+  when: nextcloud_custom.images | length == 0
+
+- name: Create the nextcloud top level folders.
+  ansible.builtin.file:
+    path: "{{ containers['config_dir'] }}/nextcloud/"
+    owner: www-data
+    group: www-data
+    mode: 0700
+    state: directory
+  become_method: containers.podman.podman_unshare
+  become: true
+
+- name: Create all nextcloud sub-folders.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ containers['data_dir'] }}/nextcloud/html"
+    - "{{ containers['data_dir'] }}/nextcloud/apps"
+    - "{{ containers['data_dir'] }}/nextcloud/data"
+    - "{{ containers['logs_dir'] }}/nextcloud/"
+
+- name: Copy www.conf.
+  ansible.builtin.copy:
+    src: files/www.conf
+    dest: "{{ containers['config_dir'] }}/nextcloud/www.conf"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: 0644
+  become: true
+
+- name: Make sure the nextcloud container is running.
+  community.docker.docker_container:
+    name: nextcloud-fpm
+    image: "{{ nextcloud_custom_img }}"
+    networks:
+      - name: container-network
+    etc_hosts: "{{ containers_etc_hosts }}"
+    mounts:
+      - # nextcloud config
+          source: "{{ containers['config_dir'] }}/nextcloud/"
+          target: /var/www/html/config/
+          type: bind
+      - # nextcloud html sub-folder
+          source: "{{ containers['data_dir'] }}/nextcloud/html"
+          target: /var/www/html/
+          type: bind
+      - # nextcloud custom_apps sub-folder
+          source: "{{ containers['data_dir'] }}/nextcloud/apps"
+          target: /var/www/html/custom_apps
+          type: bind
+      - # nextcloud data sub-folder (This folder will have the logs)
+          source: "{{ containers['data_dir'] }}/nextcloud/data"
+          target: /var/www/html/data
+          type: bind
+      - # php config
+          source: "{{ containers['config_dir'] }}/nextcloud/www.conf"
+          target: /usr/local/etc/php-fpm.d/www.conf
+          read_only: true
+          type: bind
+      - # php logs
+          source: "{{ containers['logs_dir'] }}/nextcloud/"
+          target: /var/log/php-fpm/
+          type: bind
+    state: started
+    restart_policy: unless-stopped
+    env:
+      PHP_UPLOAD_LIMIT: 50G
+      PHP_MEMORY_LIMIT: 1G
+      TZ: "{{ server['timezone'] }}"
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+
+- name: Waits nextcloud container download and extract nextcloud files.
+  ansible.builtin.wait_for:
+    path: "{{ containers['data_dir'] }}/nextcloud/html/version.php"
+    delay: 10
+    sleep: 10
+    timeout: 120
+  become: true

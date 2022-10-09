@@ -1,0 +1,22 @@
+---
+- name: Create temporary nextcloud docker directory.
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: nextcloud_docker
+  register: nextcloud_temp
+
+- name: Copy dockerfile to build custom container.
+  ansible.builtin.template:
+    src: Dockerfile
+    dest: "{{ nextcloud_temp.path }}"
+
+- name: Builds nextcloud custom image.
+  community.docker.docker_image:
+    name: "{{ nextcloud_custom_img }}"
+    build:
+      path: "{{ nextcloud_temp.path }}"
+      rm: yes
+    source: build
+    state: present
+    timeout: 600
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
