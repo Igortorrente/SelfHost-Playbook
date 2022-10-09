@@ -11,8 +11,8 @@ platforms:
   - name: instance
     box: debian/bookworm64
     box_url:
-    memory: 2048
-    cpus: 2
+    memory: 6144
+    cpus: 4
     interfaces:
       - network_name: private_network
         type: static

@@ -1,0 +1,23 @@
+---
+- name: Create temporary notify_push directory.
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: notify_push_docker
+  register: notify_push_temp
+
+- name: Clone notify_push repository.
+  ansible.builtin.git:
+    repo: https://github.com/nextcloud/notify_push.git
+    dest: "{{ notify_push_temp.path }}"
+    version: "v{{ nextcloud['notify_version'] }}"
+
+- name: Builds notify_push image.
+  community.docker.docker_image:
+    name: "notify_push:{{ nextcloud['notify_version'] }}"
+    build:
+      path: "{{ notify_push_temp.path }}"
+      rm: yes
+    source: build
+    state: present
+    timeout: 1800 # 30min
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
