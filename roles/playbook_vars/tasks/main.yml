@@ -66,6 +66,7 @@
   ansible.builtin.set_fact:
     keycloak:
       enabled: "{{ keycloak['enabled'] | default(true) }}"
+      realm_name: "{{ keycloak['realm_name'] | default('main') }}"
       postgres_user: "{{ keycloak['postgres_user'] | default('keycloak') }}"
       postgres_password: "{{ keycloak['postgres'] | default(keycloak_postgres_password) }}"
       db_name: "{{ keycloak['db_name'] | default('keycloak_db') }}"
