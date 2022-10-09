@@ -111,6 +111,7 @@
       enabled: "{{ nextcloud['enabled'] | default(true) }}"
       container_version: "{{ nextcloud['container_version'] | default('28-fpm') }}"
       nginx_version: "{{ nextcloud['nginx_version'] | default('1.25') }}"
+      notify_version: "{{ nextcloud['notify_version'] | default('0.6.9') }}"
       postgres_user: "{{ nextcloud['postgres_user'] | default('nextcloud') }}"
       postgres_password: "{{ nextcloud['postgres_password'] | default(nextcloud_postgres_password) }}"
       db_name: "{{ nextcloud['db_name'] | default('nextcloud_db') }}"
@@ -120,6 +121,7 @@
       phone_region: "{{ nextcloud['phone_region'] | default('GB') }}"
       enable_apps: "{{ nextcloud['enable_apps'] | default([]) }}"
       disable_apps: "{{ nextcloud['disable_apps'] | default([]) }}"
+      notify_push: "{{ nextcloud['notify_push'] | default(true) }}"
 
 - name: Sets up the keycloak fact and generate keycloak passwords if needed.
   ansible.builtin.set_fact:
