@@ -11,3 +11,7 @@
 - name: Var keycloak_postgres_password.
   ansible.builtin.set_fact:
     keycloak_postgres_password: "{{ password_gen }}"
+
+- name: Var keycloak_admin_password.
+  ansible.builtin.set_fact:
+    keycloak_admin_password: "{{ password_gen }}"

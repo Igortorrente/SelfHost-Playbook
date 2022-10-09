@@ -66,10 +66,13 @@
   ansible.builtin.set_fact:
     keycloak:
       enabled: "{{ keycloak['enabled'] | default(true) }}"
+      container_version: "{{ keycloak['container_version'] | default('23.0') }}"
       realm_name: "{{ keycloak['realm_name'] | default('main') }}"
       postgres_user: "{{ keycloak['postgres_user'] | default('keycloak') }}"
       postgres_password: "{{ keycloak['postgres'] | default(keycloak_postgres_password) }}"
       db_name: "{{ keycloak['db_name'] | default('keycloak_db') }}"
+      admin: "{{ keycloak['admin'] | default('admin') }}"
+      admin_password: "{{ keycloak['admin_password'] | default(keycloak_admin_password) }}"
 
 - name: Sets bind dns fact.
   ansible.builtin.set_fact:

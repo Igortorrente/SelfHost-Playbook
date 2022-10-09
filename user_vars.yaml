@@ -109,6 +109,12 @@ admin_wireguard:
 # provide Oauth2 and OpenID server for some services.
 keycloak:
     enabled: true
+    # https://quay.io/repository/keycloak/keycloak?tab=tags
+    container_version: 23.0
+    # The keycloak admin username.
+    admin: admin
+    # The password for the keycloak admin user.
+    #admin_password:
     # The name of the new realm that will be used by other services
     realm_name: main
     # Keycloak postgres admin username. This user will be used

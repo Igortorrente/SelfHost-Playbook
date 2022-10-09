@@ -37,3 +37,6 @@
 
     - role: roles/containers/services/homer
       when: homer['enabled']
+
+    - role: roles/containers/infra/keycloak/
+      when: keycloak['enabled']
