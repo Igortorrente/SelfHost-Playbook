@@ -70,6 +70,7 @@
     - { src: nginx_proxy/conf.d/mailu.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: "{{ mailu['enabled'] }}" }
     - { src: nginx_proxy/conf.d/mailu.mail.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: "{{ mailu['enabled'] }}" }
     - { src: nginx_templates/mailu_maps.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ mailu['enabled'] }}" }
+    - { src: nginx_proxy/conf.d/nextcloud.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: "{{ nextcloud['enabled'] }}" }
   when: item.enabled|bool
 
 - name: Set fact with nginx-proxy container ports.

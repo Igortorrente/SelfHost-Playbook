@@ -14,7 +14,8 @@
     dns['enabled'] or
     homer['enabled'] or
     keycloak['enabled'] or
-    mailu['enabled']
+    mailu['enabled'] or
+    nextcloud['enabled']
 
 - name: Set server timezone.
   community.general.timezone:

@@ -24,7 +24,8 @@
         dns['enabled'] or
         homer['enabled'] or
         keycloak['enabled'] or
-        mailu['enabled']
+        mailu['enabled'] or
+        nextcloud['enabled']
 
     - role: roles/containers/infra/redis/
       when: mailu['enabled']
@@ -40,7 +41,8 @@
         dns['enabled'] or
         homer['enabled'] or
         keycloak['enabled'] or
-        mailu['enabled']
+        mailu['enabled'] or
+        nextcloud['enabled']
 
     - role: roles/containers/infra/bind9/
       when: dns['enabled']
