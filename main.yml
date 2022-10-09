@@ -32,7 +32,8 @@
     - role: roles/containers/infra/postgres/
       when: >
         keycloak['enabled'] or
-        mailu['enabled']
+        mailu['enabled'] or
+        nextcloud['enabled']
 
     - role: roles/containers/infra/nginx
       when: >
