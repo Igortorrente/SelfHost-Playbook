@@ -1,0 +1,2 @@
+---
+nextcloud_custom_img: "nextcloud_custom:{{ nextcloud['container_version'] }}"
