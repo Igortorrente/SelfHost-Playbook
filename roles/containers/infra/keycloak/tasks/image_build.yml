@@ -1,0 +1,27 @@
+---
+- name: Create temporary keycloak docker directory.
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: keycloak_docker
+  register: keycloak_temp
+
+- name: Copy the custom image Dockerfile.
+  ansible.builtin.template:
+    src: Dockerfile
+    dest: "{{ keycloak_temp.path }}"
+
+- name: Copy keycloak basic config.
+  ansible.builtin.template:
+    src: keycloak.conf
+    dest: "{{ keycloak_temp.path }}"
+
+- name: Builds keycloak custom image.
+  community.docker.docker_image:
+    name: "{{ keycloak_custom_img }}"
+    build:
+      path: "{{ keycloak_temp.path }}"
+      rm: yes
+    source: build
+    state: present
+    timeout: 600
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock

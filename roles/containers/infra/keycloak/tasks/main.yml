@@ -1,0 +1,72 @@
+---
+- name: Inspect a the custom keycloak image.
+  community.docker.docker_image_info:
+    name: "{{ keycloak_custom_img }}"
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: keycloak_custom
+
+- name: Include keycloak image build tasks.
+  ansible.builtin.include_tasks: image_build.yml
+  when: keycloak_custom.images | length == 0
+
+- name: Create keycloak logs directory if it don't exist yet.
+  ansible.builtin.file:
+    path: "{{ containers['logs_dir'] }}/keycloak"
+    owner: 1000
+    group: "{{ ansible_user_id }}"
+    state: directory
+    mode: 0700
+  become_method: containers.podman.podman_unshare
+  become: true
+
+- name: The first run to setup the keycloak admin credentials.
+  community.docker.docker_container:
+    name: keycloak
+    image: "{{ keycloak_custom_img }}"
+    networks:
+      - name: container-network
+    ports:
+      - "{{ containers['loopback_network_address'] }}:10500:8080/tcp"
+    mounts:
+      - # keycloak logs folder
+          source: "{{ containers['logs_dir'] }}/keycloak"
+          target: /var/log/
+          type: bind
+    state: started
+    env:
+      KEYCLOAK_ADMIN: "{{ keycloak['admin'] }}"
+      KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak['admin_password'] }}"
+      KC_LOG: "console,file"
+      KC_LOG_FILE: /var/log/keycloak.log
+      TZ: "{{ server['timezone'] }}"
+    comparisons:
+      '*': ignore  # by default, ignore *all* options (including image)
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+
+- name: Waits for keycloak.
+  ansible.builtin.wait_for:
+    host: "{{ containers['loopback_network_address'] }}"
+    port: 10500
+    delay: 15
+    timeout: 60
+
+- name: Make sure the keycloak container is created and running without exposing the credentials.
+  community.docker.docker_container:
+    name: keycloak
+    image: "{{ keycloak_custom_img }}"
+    networks:
+      - name: container-network
+    ports:
+      - "{{ containers['loopback_network_address'] }}:10500:8080/tcp"
+    mounts:
+      - # keycloak logs
+          source: "{{ containers['logs_dir'] }}/keycloak"
+          target: /var/log/
+          type: bind
+    state: started
+    restart_policy: unless-stopped
+    env:
+      KC_LOG: "console,file"
+      KC_LOG_FILE: /var/log/keycloak.log
+      TZ: "{{ server['timezone'] }}"
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
