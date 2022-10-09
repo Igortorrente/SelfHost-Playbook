@@ -1,0 +1,65 @@
+---
+- name: Ensure all databases are created.
+  community.postgresql.postgresql_db:
+    name: "{{ item.name }}"
+    login_user: "{{ postgres['admin_user'] }}"
+    login_password: "{{ postgres['admin_passwd'] }}"
+    maintenance_db: "{{ postgres['admin_db'] }}"
+    login_host: "{{ containers['loopback_network_address'] }}"
+    port: 5432
+    template: template0
+    encoding: "UTF8"
+    state: present
+  loop:
+    - { name: "{{ keycloak['db_name'] }}", enabled: "{{ keycloak['enabled'] }}" }
+  when: item.enabled
+
+- name: Ensure all database users are created.
+  community.postgresql.postgresql_user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    login_user: "{{ postgres['admin_user'] }}"
+    login_password: "{{ postgres['admin_passwd'] }}"
+    db: "{{ postgres['admin_db'] }}"
+    login_host: "{{ containers['loopback_network_address'] }}"
+    port: 5432
+    no_password_changes: true
+    state: present
+  environment:
+    PGOPTIONS: "-c password_encryption=scram-sha-256"
+  loop:
+    - { name: "{{ keycloak['postgres_user'] }}", password: "{{ keycloak['postgres_password'] }}",
+        enabled: "{{ keycloak['enabled'] }}" }
+  when: item.enabled
+
+- name: Change database owners to their respective users if they don't have it yet.
+  community.postgresql.postgresql_owner:
+    db: "{{ item.db }}"
+    obj_name: "{{ item.obj_name }}"
+    new_owner: "{{ item.new_owner }}"
+    login_user: "{{ postgres['admin_user'] }}"
+    login_password: "{{ postgres['admin_passwd'] }}"
+    login_host: "{{ containers['loopback_network_address'] }}"
+    port: 5432
+    obj_type: database
+  loop:
+    - { db: "{{ keycloak['db_name'] }}", obj_name: "{{ keycloak['db_name'] }}",
+        new_owner: "{{ keycloak['postgres_user'] }}", enabled: "{{ keycloak['enabled'] }}" }
+  when: item.enabled
+
+- name: Grant database to their respective users if they don't have it yet.
+  community.postgresql.postgresql_privs:
+    database: "{{ item.db }}"
+    roles: "{{ item.roles }}"
+    login_user: "{{ postgres['admin_user'] }}"
+    login_password: "{{ postgres['admin_passwd'] }}"
+    login_host: "{{ containers['loopback_network_address'] }}"
+    port: 5432
+    privs: all
+    grant_option: false
+    type: database
+    state: present
+  loop:
+    - { db: "{{ keycloak['db_name'] }}", roles: "{{ keycloak['postgres_user'] }}",
+        enabled: "{{ keycloak['enabled'] }}" }
+  when: item.enabled

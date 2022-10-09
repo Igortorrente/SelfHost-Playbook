@@ -1,4 +1,13 @@
+# We need split the set_facts to generate a different password for
+# each service.
+# If we put just one set_fact, the password_gen will be evaluated once,
+# and therefore only one password will be generated for all services.
+# This is ugly, and an improvement is wellcome.
 ---
 - name: Var postgres_passwd.
   ansible.builtin.set_fact:
     postgres_passwd: "{{ password_gen }}"
+
+- name: Var keycloak_postgres_password.
+  ansible.builtin.set_fact:
+    keycloak_postgres_password: "{{ password_gen }}"

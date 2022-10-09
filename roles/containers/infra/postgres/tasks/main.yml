@@ -100,3 +100,6 @@
     delay: 5
     sleep: 3
     timeout: 45
+
+- name: Include Populate postgres tasks
+  ansible.builtin.include_tasks: populate.yml
