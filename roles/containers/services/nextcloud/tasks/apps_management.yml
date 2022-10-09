@@ -1,0 +1,26 @@
+---
+- name: Install and enable nextcloud apps if they are not installed yet.
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: php occ app:enable {{ item }}
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: app_enablement
+  changed_when: "'already enabled' not in app_enablement.stdout"
+  # Instead of `app_enablement.rc != 0`, just don't fail the playbook
+  failed_when: false
+  when: nextcloud['enable_apps'] is defined
+  loop: "{{ nextcloud['enable_apps'] }}"
+
+- name: Disable nextcloud apps if they are not installed yet.
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: php occ app:disable {{ item }}
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: app_disablement
+  changed_when: "'No such app enabled' not in app_disablement.stdout"
+  # Same here
+  failed_when: false
+  when: nextcloud['disable_apps'] is defined
+  loop: "{{ nextcloud['disable_apps'] }}"

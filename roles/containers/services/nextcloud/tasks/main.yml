@@ -95,3 +95,6 @@
 
 - name: Include cron tasks.
   ansible.builtin.include_tasks: cron.yml
+
+- name: Include apps management tasks.
+  ansible.builtin.include_tasks: apps_management.yml
