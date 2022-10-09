@@ -86,3 +86,6 @@
     sleep: 10
     timeout: 120
   become: true
+
+- name: Include nginx tasks.
+  ansible.builtin.include_tasks: nginx.yml

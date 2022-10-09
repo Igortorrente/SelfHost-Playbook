@@ -1,0 +1,57 @@
+---
+- name: Create all nginx-nextcloud sub-folders.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: 0700
+    owner: 101
+    group: "{{ ansible_user_id }}"
+    state: directory
+  become_method: containers.podman.podman_unshare
+  become: true
+  loop:
+    - "{{ containers['config_dir'] }}/nextcloud-nginx/"
+    - "{{ containers['logs_dir'] }}/nextcloud-nginx"
+
+- name: Copy the local network Systemd configuration file.
+  ansible.builtin.template:
+    src: nginx.conf
+    dest: "{{ containers['config_dir'] }}/nextcloud-nginx/nginx.conf"
+    owner: 101
+    group: "{{ ansible_user_id }}"
+    mode: 0640
+  become_method: containers.podman.podman_unshare
+  become: true
+
+- name: Make sure the nextcloud-nginx container is running.
+  community.docker.docker_container:
+    name: nginx-nextcloud
+    image: "nginxinc/nginx-unprivileged:{{ nextcloud['nginx_version'] }}"
+    networks:
+      - name: container-network
+    ports:
+      - "{{ containers['loopback_network_address'] }}:10200:10200/tcp"
+    mounts:
+      - # nginx config
+          source: "{{ containers['config_dir'] }}/nextcloud-nginx/nginx.conf"
+          target: /etc/nginx/nginx.conf
+          read_only: true
+          type: bind
+      - # nginx log folder
+          source: "{{ containers['logs_dir'] }}/nextcloud-nginx"
+          target: /var/log/nginx/
+          type: bind
+      - # nginx html folder
+          source: "{{ containers['data_dir'] }}/nextcloud/html"
+          target: /var/www/html/
+          type: bind
+          read_only: true
+      - # nextcloud custom_apps sub-folder
+          source: "{{ containers['data_dir'] }}/nextcloud/apps"
+          target: /var/www/html/custom_apps
+          type: bind
+          read_only: true
+    env:
+      TZ: "{{ server['timezone'] }}"
+    state: started
+    restart_policy: unless-stopped
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
