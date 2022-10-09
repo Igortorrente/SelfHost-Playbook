@@ -107,6 +107,18 @@ admin_wireguard:
     allowed_ip: 20.0.0.2/32
     listen_port: 51820
 
+# Keycloak is open source identity and access management that can
+# provide Oauth2 and OpenID server for some services.
+keycloak:
+    enabled: true
+    # Keycloak postgres admin username. This user will be used
+    # to setup and access the postgres database for keycloak.
+    postgres_user: keycloak
+    # Keycloak postgres password.
+    #postgres_password:
+    # Keycloak database name in postgres.
+    db_name: keycloak_db
+
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
 # be executed.

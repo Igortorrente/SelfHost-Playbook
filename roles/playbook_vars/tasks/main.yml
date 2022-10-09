@@ -63,6 +63,14 @@
       allowed_ip: "{{ admin_wireguard['allowed_ip'] | default('20.0.0.2/32') }}"
       listen_port: "{{ admin_wireguard['listen_port'] | default('51820') }}"
 
+- name: Sets up the keycloak fact and generate keycloak passwords if needed.
+  ansible.builtin.set_fact:
+    keycloak:
+      enabled: "{{ keycloak['enabled'] | default(true) }}"
+      postgres_user: "{{ keycloak['postgres_user'] | default('keycloak') }}"
+      postgres_password: "{{ keycloak['postgres'] | default(keycloak_postgres_password) }}"
+      db_name: "{{ keycloak['db_name'] | default('keycloak_db') }}"
+
 - name: Sets bind dns fact.
   ansible.builtin.set_fact:
     dns:
