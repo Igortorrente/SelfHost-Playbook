@@ -89,3 +89,6 @@
 
 - name: Include nginx tasks.
   ansible.builtin.include_tasks: nginx.yml
+
+- name: Include config tasks.
+  ansible.builtin.include_tasks: install_config.yml
