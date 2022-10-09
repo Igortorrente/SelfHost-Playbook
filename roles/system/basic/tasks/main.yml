@@ -59,4 +59,6 @@
     pkg: git
     state: present
   become: true
-  when: mailu['enabled'] is true
+  when: >
+    mailu['enabled'] is true or
+    (nextcloud['enabled'] is true and nextcloud['notify_push'] is true)

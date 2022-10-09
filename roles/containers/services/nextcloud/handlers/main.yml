@@ -44,3 +44,13 @@
   loop:
     - cron_nextcloud.service
     - cron_nextcloud.timer
+
+- name: Configure notify_push in nextcloud
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: php occ notify_push:setup https://{{ server['network']['domain_name'] }}/push --no-interaction --ansi
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: notify_push_configure
+  #changed_when: "'installed: false' in notify_push_configure.stdout"
+  failed_when: notify_push_configure.rc != 0

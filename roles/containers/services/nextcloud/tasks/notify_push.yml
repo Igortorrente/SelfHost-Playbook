@@ -1,0 +1,54 @@
+---
+- name: Inspect a the notify_push image.
+  community.docker.docker_image_info:
+    name: "notify_push:{{ nextcloud['notify_version'] }}"
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: notify_push
+
+- name: Include notify_push image build tasks if necessary.
+  ansible.builtin.include_tasks: notify_push_img.yml
+  when: notify_push.images | length == 0
+
+- name: Install nextcloud notify_push if it isn't installed yet.
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: php occ app:enable notify_push
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: notify_push_install
+  changed_when: "'notify_push already enabled' not in notify_push_install.stdout"
+  failed_when: notify_push_install.rc != 0
+
+- name: Make sure the nextcloud container is running.
+  community.docker.docker_container:
+    name: notify-push-nextcloud
+    image: "notify_push:{{ nextcloud['notify_version'] }}"
+    networks:
+      - name: container-network
+    ports:
+      - 10.0.0.1:7867:7867
+    user: '33:33'
+    etc_hosts: "{{ containers_etc_hosts }}"
+    mounts:
+      - # nextcloud config
+          source: "{{ containers['config_dir'] }}/nextcloud/config.php"
+          target: /config.php
+          read_only: true
+          type: bind
+    state: started
+    restart_policy: unless-stopped
+    command: /notify_push /config.php
+    env:
+      NEXTCLOUD_URL: http://nginx-nextcloud:10200
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+
+- name: Check if nextcloud notify_push isn't configured.
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: php occ notify_push:self-test --no-interaction --ansi
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: notify_push_self_test
+  changed_when: "'no push server configured' in notify_push_self_test.stdout"
+  failed_when: false
+  notify: Configure notify_push in nextcloud

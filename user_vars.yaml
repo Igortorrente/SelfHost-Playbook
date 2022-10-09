@@ -228,6 +228,8 @@ nextcloud:
     container_version: 32-fpm
     # https://registry.hub.docker.com/r/nginxinc/nginx-unprivileged
     nginx_version: 1.29
+    # https://github.com/nextcloud/notify_push/
+    notify_version: 1.2.1
     # The nextcloud postgres admin username. This user will be used
     # to setup and access the postgres database for nextcloud.
     postgres_user: nextcloud
@@ -247,6 +249,9 @@ nextcloud:
     # a warning.
     # valid values: https://en.wikipedia.org/wiki/ISO_3166-1
     phone_region: GB
+    # Enables/disabled the high performance files backend for
+    # nextcloud
+    notify_push: true
     # The list of Nextcloud app that will be installed and enabled.
     # If you do not set this variable, no app will be installed.
     enable_apps:
