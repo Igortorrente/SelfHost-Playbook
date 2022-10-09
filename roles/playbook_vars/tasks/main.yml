@@ -110,6 +110,7 @@
     nextcloud:
       enabled: "{{ nextcloud['enabled'] | default(true) }}"
       container_version: "{{ nextcloud['container_version'] | default('28-fpm') }}"
+      nginx_version: "{{ nextcloud['nginx_version'] | default('1.25') }}"
       postgres_user: "{{ nextcloud['postgres_user'] | default('nextcloud') }}"
       postgres_password: "{{ nextcloud['postgres_password'] | default(nextcloud_postgres_password) }}"
       db_name: "{{ nextcloud['db_name'] | default('nextcloud_db') }}"
