@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the cron.php for nextcloud every 5 minutes
+
+[Timer]
+#Execute job if it missed a run due to machine being off
+Persistent=true
+#Run 120 seconds after boot for the first time
+OnCalendar=*:0/5
+
+[Install]
+WantedBy=timers.target

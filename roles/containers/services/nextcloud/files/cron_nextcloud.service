@@ -1,0 +1,9 @@
+# https://www.freedesktop.org/software/systemd/man/systemd.unit.html#Specifiers
+[Unit]
+Description=Nextcloud cron
+Requires=docker.service
+
+[Service]
+Type=simple
+Environment=DOCKER_HOST=unix:///run/user/%U/docker.sock
+ExecStart=/usr/bin/docker exec --user www-data nextcloud-fpm /usr/local/bin/php /var/www/html/cron.php

@@ -33,3 +33,14 @@
       PHP_MEMORY_LIMIT: 1G
       TZ: "{{ server['timezone'] }}"
     docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+
+- name: Enable systemd units
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    scope: user
+    enabled: true
+    state: started
+    daemon_reload: true
+  loop:
+    - cron_nextcloud.service
+    - cron_nextcloud.timer
