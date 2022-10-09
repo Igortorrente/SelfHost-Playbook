@@ -119,6 +119,8 @@
       admin_password: "{{ nextcloud['admin_password'] | default(nextcloud_admin_password) }}"
       default_language: "{{ nextcloud['default_language'] | default('en') }}"
       phone_region: "{{ nextcloud['phone_region'] | default('GB') }}"
+      enable_apps: "{{ nextcloud['enable_apps'] | default([]) }}"
+      disable_apps: "{{ nextcloud['disable_apps'] | default([]) }}"
 
 - name: Sets up the keycloak fact and generate keycloak passwords if needed.
   ansible.builtin.set_fact:

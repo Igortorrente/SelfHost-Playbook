@@ -247,6 +247,20 @@ nextcloud:
     # a warning.
     # valid values: https://en.wikipedia.org/wiki/ISO_3166-1
     phone_region: GB
+    # The list of Nextcloud app that will be installed and enabled.
+    # If you do not set this variable, no app will be installed.
+    enable_apps:
+      - calendar
+      - tasks
+      - notes
+      - contacts
+      - metadata
+    # Same idea as nextcloud_apps, but here we will disable the apps
+    # in the list
+    # If you do not set this variable, no app will be disabled.
+    disable_apps:
+      - firstrunwizard
+      - password_police
 
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
