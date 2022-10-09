@@ -1,0 +1,13 @@
+---
+- name: Copy user systemd files.
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ ansible_user_dir }}/.config/systemd/user"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: 0640
+  register: systemd_cron
+  notify: Enable systemd units
+  loop:
+    - files/cron_nextcloud.service
+    - files/cron_nextcloud.timer
