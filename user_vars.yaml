@@ -111,6 +111,8 @@ admin_wireguard:
 # provide Oauth2 and OpenID server for some services.
 keycloak:
     enabled: true
+    # The name of the new realm that will be used by other services
+    realm_name: main
     # Keycloak postgres admin username. This user will be used
     # to setup and access the postgres database for keycloak.
     postgres_user: keycloak

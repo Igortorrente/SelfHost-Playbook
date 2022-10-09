@@ -1,0 +1,13 @@
+# Access only allowed to the localhost
+{% if server['network']['ipv4'] is defined %}
+allow {{ server['network']['ipv4'] }};
+{% endif %}
+{% if server['network']['ipv6'] is defined %}
+allow {{ server['network']['ipv6'] }};
+{% endif %}
+{% if admin_wireguard['enabled'] is true %}
+allow {{ admin_wireguard['address'] | regex_replace('[0-9]+(/[0-9]+)$', '0\\1') }};
+{% endif %}
+allow 127.0.0.1;
+allow ::1;
+deny all;

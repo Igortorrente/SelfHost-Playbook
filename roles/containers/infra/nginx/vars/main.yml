@@ -1,6 +1,9 @@
 ---
 misc_tmpl_need: |-
-  {{ homer['enabled'] }}
+  {{
+    homer['enabled'] or
+    keycloak['enabled']
+  }}
 
 common_tmpl_need: |-
   {{ misc_tmpl_need }}

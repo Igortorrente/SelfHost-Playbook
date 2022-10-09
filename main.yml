@@ -29,7 +29,8 @@
     - role: roles/containers/infra/nginx
       when: >
         dns['enabled'] or
-        homer['enabled']
+        homer['enabled'] or
+        keycloak['enabled']
 
     - role: roles/containers/infra/bind9/
       when: dns['enabled']
