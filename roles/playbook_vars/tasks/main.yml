@@ -106,6 +106,14 @@
       smtp_name: "{{ mailu['services_mail']['username'] if mailu['services_mail']['enabled'] else services_mail['smtp_name'] }}"
       smtp_password: "{{ mailu['services_mail']['password'] if mailu['services_mail']['enabled'] else services_mail['smtp_password'] }}"
 
+- name: Sets up the nextcloud fact and generate nextcloud passwords if needed.
+  ansible.builtin.set_fact:
+    nextcloud:
+      enabled: "{{ nextcloud['enabled'] | default(true) }}"
+      postgres_user: "{{ nextcloud['postgres_user'] | default('nextcloud') }}"
+      postgres_password: "{{ nextcloud['postgres_password'] | default(nextcloud_postgres_password) }}"
+      db_name: "{{ nextcloud['db_name'] | default('nextcloud_db') }}"
+
 - name: Sets up the keycloak fact and generate keycloak passwords if needed.
   ansible.builtin.set_fact:
     keycloak:

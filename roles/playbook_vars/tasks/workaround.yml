@@ -43,3 +43,7 @@
 - name: Var services_mail_password.
   ansible.builtin.set_fact:
     services_mail_password: "{{ password_gen }}"
+
+- name: Var nextcloud_postgres_password.
+  ansible.builtin.set_fact:
+    nextcloud_postgres_password: "{{ password_gen }}"

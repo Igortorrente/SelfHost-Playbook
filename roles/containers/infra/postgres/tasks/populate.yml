@@ -15,6 +15,7 @@
     - { name: "{{ mailu['db_name'] }}", enabled: "{{ mailu['enabled'] }}" }
     - { name: "{{ mailu['roundcube']['db_name'] }}",
         enabled: "{{ mailu['roundcube']['enabled'] and mailu['enabled'] }}" }
+    - { name: "{{ nextcloud['db_name'] }}", enabled: "{{ nextcloud['enabled'] }}" }
   when: item.enabled|bool
 
 - name: Ensure all database users are created.
@@ -38,6 +39,8 @@
     - { name: "{{ mailu['roundcube']['postgres_user'] }}",
         password: "{{ mailu['roundcube']['postgres_password'] }}",
         enabled: "{{ mailu['roundcube']['enabled'] and mailu['enabled'] }}" }
+    - { name: "{{ nextcloud['postgres_user'] }}", password: "{{ nextcloud['postgres_password'] }}",
+        enabled: "{{ nextcloud['enabled'] }}" }
   when: item.enabled|bool
 
 - name: Change database owners to their respective users if they don't have it yet.
@@ -58,6 +61,8 @@
     - { db: "{{ mailu['roundcube']['db_name'] }}", obj_name: "{{ mailu['roundcube']['db_name'] }}",
         new_owner: "{{ mailu['roundcube']['postgres_user'] }}",
         enabled: "{{ mailu['roundcube']['enabled'] }}" }
+    - { db: "{{ nextcloud['db_name'] }}", obj_name: "{{ nextcloud['db_name'] }}",
+        new_owner: "{{ nextcloud['postgres_user'] }}", enabled: "{{ nextcloud['enabled'] }}" }
   when: item.enabled|bool
 
 - name: Grant database to their respective users if they don't have it yet.
@@ -79,4 +84,6 @@
         enabled: "{{ mailu['enabled'] }}" }
     - { db: "{{ mailu['roundcube']['db_name'] }}", roles: "{{ mailu['roundcube']['postgres_user'] }}",
         enabled: "{{ mailu['roundcube']['enabled'] }}" }
+    - { db: "{{ nextcloud['db_name'] }}", roles: "{{ nextcloud['postgres_user'] }}",
+        enabled: "{{ nextcloud['enabled'] }}" }
   when: item.enabled|bool
