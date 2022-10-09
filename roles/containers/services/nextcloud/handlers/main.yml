@@ -1,0 +1,35 @@
+---
+- name: Ensure nextcloud is installed
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: >
+      php occ maintenance:install --database=pgsql --no-interaction --database-host=postgres
+      --database-name={{ nextcloud['db_name'] }}
+      --database-user={{ nextcloud['postgres_user'] }}
+      --database-pass={{ nextcloud['postgres_password'] }}
+      --admin-user={{ nextcloud['admin'] }}
+      --admin-pass={{ nextcloud['admin_password'] }}
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: nextcloud_install
+  failed_when: nextcloud_install.rc != 0
+
+- name: Add missing indices to db
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: php occ db:add-missing-indices
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: nextcloud_install
+  failed_when: nextcloud_install.rc != 0
+
+- name: Restart nextcloud container
+  community.docker.docker_container:
+    name: nextcloud-fpm
+    state: started
+    restart: yes
+    env:
+      PHP_UPLOAD_LIMIT: 50G
+      PHP_MEMORY_LIMIT: 1G
+      TZ: "{{ server['timezone'] }}"
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock

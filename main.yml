@@ -28,7 +28,7 @@
         nextcloud['enabled']
 
     - role: roles/containers/infra/redis/
-      when: mailu['enabled']
+      when: mailu['enabled'] or nextcloud['enabled']
 
     - role: roles/containers/infra/postgres/
       when: >

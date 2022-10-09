@@ -1,0 +1,44 @@
+---
+- name: Check if nextcloud is installed and calls handler if needed.
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: php occ status
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: nextcloud_install
+  changed_when: "'installed: false' in nextcloud_install.stdout"
+  notify:
+    - Ensure nextcloud is installed
+    - Add missing indices to db
+
+- name: Make sure nextcloud installation handler is flushed.
+  ansible.builtin.meta: flush_handlers
+
+- name: Get all the important config.php information.
+  ansible.builtin.slurp:
+    src: "{{ containers['config_dir'] }}/nextcloud/config.php"
+  register: config_data
+  become: true
+
+- name: Copy config.php configured.
+  ansible.builtin.template:
+    src: config.php
+    dest: "{{ containers['config_dir'] }}/nextcloud/config.php"
+    owner: www-data
+    group: www-data
+    mode: 0640
+  vars:
+    nc_passwordsalt: "{{ config_data['content'] | b64decode | regex_findall(\"'passwordsalt' => '(.+)',\") | first }}"
+    nc_secret: "{{ config_data['content'] | b64decode | regex_findall(\"'secret' => '(.+)',\") | first }}"
+    nc_datadirectory: "{{ config_data['content'] | b64decode | regex_findall(\"'datadirectory' => '(.+)',\") | first }}"
+    nc_version: "{{ config_data['content'] | b64decode | regex_findall(\"'version' => '(.+)',\") | first }}"
+    nc_overwrite_cli_url: "{{ config_data['content'] | b64decode | regex_findall(\"'overwrite.cli.url' => '(.+)',\") | first }}"
+    nc_dbtableprefix: "{{ config_data['content'] | b64decode | regex_findall(\"'dbtableprefix' => '(.+)',\") | first }}"
+    nc_installed: "{{ config_data['content'] | b64decode | regex_findall(\"'installed' => (true|false),\") | first }}"
+    nc_instanceid: "{{ config_data['content'] | b64decode | regex_findall(\"'instanceid' => '(.+)',\") | first }}"
+  become_method: containers.podman.podman_unshare
+  notify: Restart nextcloud container
+  become: true
+
+- name: Flush restart nextcloud handler.
+  ansible.builtin.meta: flush_handlers

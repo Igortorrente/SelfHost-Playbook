@@ -115,6 +115,10 @@
       postgres_user: "{{ nextcloud['postgres_user'] | default('nextcloud') }}"
       postgres_password: "{{ nextcloud['postgres_password'] | default(nextcloud_postgres_password) }}"
       db_name: "{{ nextcloud['db_name'] | default('nextcloud_db') }}"
+      admin: "{{ nextcloud['admin'] | default('admin') }}"
+      admin_password: "{{ nextcloud['admin_password'] | default(nextcloud_admin_password) }}"
+      default_language: "{{ nextcloud['default_language'] | default('en') }}"
+      phone_region: "{{ nextcloud['phone_region'] | default('GB') }}"
 
 - name: Sets up the keycloak fact and generate keycloak passwords if needed.
   ansible.builtin.set_fact:

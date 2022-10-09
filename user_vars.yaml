@@ -235,6 +235,18 @@ nextcloud:
     #postgres_password:
     # Keycloak database name in postgres.
     db_name: nextcloud_db
+    # The nextcloud admin username.
+    admin: admin
+    # The password for the nextcloud admin user.
+    #admin_password:
+    # Only used, when the browser does not send any language, and the user
+    # hasn’t configured own language preferences.
+    # Valid values: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+    default_language: en
+    # Sets the 'default_phone_region' nextcloud variables, avoiding
+    # a warning.
+    # valid values: https://en.wikipedia.org/wiki/ISO_3166-1
+    phone_region: GB
 
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
