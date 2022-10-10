@@ -134,6 +134,9 @@
   ansible.builtin.set_fact:
     collabora_office:
       enabled: "{{ nextcloud['collabora_office'] }}"
+      container_version: "{{ collabora_office['container_version'] | default('23.05.7.2.1') }}"
+      admin: "{{ collabora_office['admin'] | default('admin') }}"
+      admin_password: "{{ collabora_office['admin_password'] | default(collabora_office_admin_password) }}"
 
 - name: Sets up the keycloak fact and generate keycloak passwords if needed.
   ansible.builtin.set_fact:

@@ -1,0 +1,18 @@
+---
+# TODO: Fix password setup
+- name: Ensure the admin password is set
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm -a STDOUT -a STDERR -a STDIN
+      -v {{ containers['config_dir'] }}/collabora_online/coolwsd.xml:/etc/coolwsd/coolwsd.xml
+      collabora/code:{{ collabora_office['container_version'] }}
+      coolconfig set-admin-password --config-file=/etc/coolwsd/coolwsd.xml
+    stdin: |-
+      {{ collabora_office['admin'] }}
+      {{ collabora_office['admin_password'] }}
+      {{ collabora_office['admin_password'] }}
+    stdin_add_newline: false
+  environment:
+    DOCKER_HOST: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: collabora_credentials
+  failed_when: collabora_credentials.rc != 0
