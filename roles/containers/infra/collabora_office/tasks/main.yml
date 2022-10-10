@@ -1,0 +1,54 @@
+---
+- name: Create the config folder.
+  ansible.builtin.file:
+    path: "{{ containers['config_dir'] }}/collabora_online/"
+    owner: 1001
+    group: 1001
+    mode: 0770
+    state: directory
+  become_method: containers.podman.podman_unshare
+  become: true
+
+- name: Checks if the collabora config file exists.
+  ansible.builtin.stat:
+    path: "{{ containers['config_dir'] }}/collabora_online/coolwsd.xml"
+  check_mode: true
+  register: coolwsd
+  become: true
+
+- name: Ensure the collabora office config is at right place.
+  ansible.builtin.template:
+    src: coolwsd.xml
+    dest: "{{ containers['config_dir'] }}/collabora_online/coolwsd.xml"
+    owner: 1001
+    group: 1001
+    mode: 0640
+  become_method: containers.podman.podman_unshare
+  when: coolwsd.stat.exists is false
+  become: true
+
+- name: Flushed the handles before setting up the container
+  ansible.builtin.meta: flush_handlers
+
+- name: Make sure collabora office online container is running.
+  community.docker.docker_container:
+    name: collabora-online
+    image: "collabora/code:{{ collabora_office['container_version'] }}"
+    networks:
+      - name: container-network
+    etc_hosts: "{{ containers_etc_hosts }}"
+    ports:
+      - "{{ containers['loopback_network_address'] }}:9980:9980/tcp"
+    mounts:
+      - # collabora office config
+          source: "{{ containers['config_dir'] }}/collabora_online/coolwsd.xml"
+          target: /etc/coolwsd/coolwsd.xml
+          type: bind
+    state: started
+    restart_policy: unless-stopped
+    capabilities:
+      - SYS_CHROOT
+      - SYS_ADMIN
+      - FOWNER
+      - CHOWN
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock

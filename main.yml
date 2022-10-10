@@ -25,7 +25,8 @@
         homer['enabled'] or
         keycloak['enabled'] or
         mailu['enabled'] or
-        nextcloud['enabled']
+        nextcloud['enabled'] or
+        collabora_office['enabled']
 
     - role: roles/containers/infra/redis/
       when: mailu['enabled'] or nextcloud['enabled']
@@ -50,6 +51,9 @@
 
     - role: roles/containers/services/homer
       when: homer['enabled']
+
+    - role: roles/containers/infra/collabora_office
+      when: collabora_office['enabled']
 
     - role: roles/containers/infra/keycloak/
       when: keycloak['enabled']
