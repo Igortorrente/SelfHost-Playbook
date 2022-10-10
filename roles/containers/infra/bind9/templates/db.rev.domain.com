@@ -27,6 +27,9 @@ $TTL    259200
 {% if nextcloud['enabled'] is defined %}
 {{ ipv4_part[3] }}     IN      PTR     {{ server['network']['domain_name'] }}.
 {% endif %}
+{% if collabora_office['enabled'] is defined %}
+{{ ipv4_part[3] }}     IN      PTR     collaboraonline.{{ server['network']['domain_name'] }}.
+{% endif %}
 
 ; also list other computers
 ;21      IN      PTR     box.example.com.
