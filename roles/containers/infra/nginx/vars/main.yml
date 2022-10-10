@@ -3,7 +3,8 @@ misc_tmpl_need: |-
   {{
     homer['enabled'] or
     keycloak['enabled'] or
-    mailu['enabled']
+    mailu['enabled'] or
+    collabora_office['enabled']
   }}
 
 common_tmpl_need: |-

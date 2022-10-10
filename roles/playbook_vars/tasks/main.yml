@@ -122,12 +122,18 @@
       enable_apps: "{{ nextcloud['enable_apps'] | default([]) }}"
       disable_apps: "{{ nextcloud['disable_apps'] | default([]) }}"
       notify_push: "{{ nextcloud['notify_push'] | default(true) }}"
+      collabora_office: "{{ nextcloud['collabora_office'] | default(true) if nextcloud['enabled'] else false }}"
       OIDC:
         enabled: "{{ nextcloud['OIDC']['enabled'] | default(true) if nextcloud['enabled'] else false }}"
         client_id: "{{ nextcloud['OIDC']['client_id'] | default('nextcloud') }}"
         client_secret: "{{ nextcloud['OIDC']['client_secret'] | default(nextcloud_client_secret) }}"
         identifier: "{{ nextcloud['OIDC']['identifier'] | default('keycloak') }}"
         allow_multiple_user_backends: "{{ nextcloud['OIDC']['allow_multiple_user_backends'] | default(true) }}"
+
+- name: Generates collabora office admin password if needed.
+  ansible.builtin.set_fact:
+    collabora_office:
+      enabled: "{{ nextcloud['collabora_office'] }}"
 
 - name: Sets up the keycloak fact and generate keycloak passwords if needed.
   ansible.builtin.set_fact:
