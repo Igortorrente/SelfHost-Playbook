@@ -252,6 +252,8 @@ nextcloud:
     # Enables/disabled the high performance files backend for
     # nextcloud
     notify_push: true
+    # Enabled the collabora office intrationg with nextcloud
+    collabora_office: true
     # Set information about the client.
     # Check https://www.oauth.com/oauth2-servers/definitions/
     # for more information.
