@@ -284,6 +284,14 @@ nextcloud:
       - firstrunwizard
       - password_police
 
+collabora_office:
+    # https://hub.docker.com/r/collabora/code/tags
+    container_version: 23.05.9.2.1
+    # Collabora office admin username.
+    admin: admin
+    # Password for the Collabora office admin user.
+    #admin_password:
+
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
 # be executed.

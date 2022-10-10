@@ -15,7 +15,8 @@
     homer['enabled'] or
     keycloak['enabled'] or
     mailu['enabled'] or
-    nextcloud['enabled']
+    nextcloud['enabled'] or
+    collabora_office['enabled']
 
 - name: Set server timezone.
   community.general.timezone:

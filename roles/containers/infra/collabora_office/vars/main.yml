@@ -1,0 +1,2 @@
+---
+domain_name_split: "{{ server['network']['domain_name'] | split('.') }}"
