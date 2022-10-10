@@ -106,3 +106,7 @@
 - name: Include Open ID connect config tasks.
   ansible.builtin.include_tasks: oidc_config.yml
   when: nextcloud['OIDC']['enabled']
+
+- name: Include collabora office online config tasks.
+  ansible.builtin.include_tasks: collabora_office.yml
+  when: nextcloud['collabora_office'] is true

@@ -1,0 +1,27 @@
+---
+- name: Install richdocuments app.
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: php occ app:enable richdocuments
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: app_enablement
+  changed_when: "'richdocuments already enabled' not in app_enablement.stdout"
+  failed_when: app_enablement.rc != 0
+
+- name: Check if richdocuments(Collabora Online) is configured.
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: php occ config:app:get richdocuments {{ item.var }}
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: cmd
+  changed_when: cmd.rc == 1 or cmd.stdout != item.return
+  failed_when: false
+  notify: Configure richdocuments(Collabora Online) app
+  loop:
+    - { var: public_wopi_url, return: "https://collaboraonline.{{ server['network']['domain_name'] }}/" }
+    - { var: wopi_url, return: "https://collaboraonline.{{ server['network']['domain_name'] }}/" }
+    - { var: disable_certificate_verification,
+        return: "{{ 'no' if nginx_proxy['certbot']['enabled'] else 'yes' }}" }
+    - { var: wopi_allowlist, return: "{{ loopback_net }}/24,{{ server['network']['ipv4'] }},{{ containers['subnet'] }}" }
