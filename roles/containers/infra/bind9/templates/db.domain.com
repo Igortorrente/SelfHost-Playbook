@@ -33,6 +33,10 @@ www.mail             IN      A       {{ server['network']['ipv4'] }}
 autoconfig           IN      A       {{ server['network']['ipv4'] }}
 autodiscover         IN      A       {{ server['network']['ipv4'] }}
 {% endif %}
+{% if collabora_office['enabled'] is defined %}
+collaboraonline      IN      A       {{ server['network']['ipv4'] }}
+www.collaboraonline  IN      A       {{ server['network']['ipv4'] }}
+{% endif %}
 {% endif %}
 
 {% if server['network']['ipv6'] is defined and dns['AAAA_records'] is true %}
@@ -51,6 +55,10 @@ mail                 IN     AAAA     {{ server['network']['ipv6'] }}
 www.mail             IN     AAAA     {{ server['network']['ipv6'] }}
 autoconfig.mail      IN     AAAA     {{ server['network']['ipv6'] }}
 autodiscover.mail    IN     AAAA     {{ server['network']['ipv6'] }}
+{% endif %}
+{% if collabora_office['enabled'] is defined %}
+collaboraonline      IN     AAAA     {{ server['network']['ipv6'] }}
+www.collaboraonline  IN     AAAA     {{ server['network']['ipv6'] }}
 {% endif %}
 {% endif %}
 {% if mailu['enabled'] is defined %}
