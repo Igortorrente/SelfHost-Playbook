@@ -143,9 +143,13 @@
   ansible.builtin.set_fact:
     vaultwarden:
       enabled: "{{ vaultwarden['enabled'] | default(true) }}"
+      container_version: "{{ vaultwarden['container_version'] | default('1.35.1') }}"
       postgres_user: "{{ vaultwarden['postgres_user'] | default('vaultwarden') }}"
       postgres_password: "{{ vaultwarden['postgres_password'] | default(vaultwarden_postgres_password) }}"
       db_name: "{{ vaultwarden['db_name'] | default('vaultwarden_db') }}"
+      admin_panel: "{{ vaultwarden['admin_panel'] | default(true) }}"
+      admin_token: "{{ vaultwarden['admin_token'] | default(vaultwarden_admin_token) }}"
+      invitation_org_name: "{{ vaultwarden['invitation_org_name'] | default(server['network']['domain_name']) }}"
 
 - name: Sets up the keycloak fact and generate keycloak passwords if needed.
   ansible.builtin.set_fact:

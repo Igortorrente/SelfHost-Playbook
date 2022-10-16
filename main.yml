@@ -26,7 +26,8 @@
         keycloak['enabled'] or
         mailu['enabled'] or
         nextcloud['enabled'] or
-        collabora_office['enabled']
+        collabora_office['enabled'] or
+        vaultwarden['enabled']
 
     - role: roles/containers/infra/redis/
       when: mailu['enabled'] or nextcloud['enabled']
@@ -65,3 +66,6 @@
 
     - role: roles/containers/services/nextcloud
       when: nextcloud['enabled']
+
+    - role: roles/containers/services/vaultwarden
+      when: vaultwarden['enabled']

@@ -1,0 +1,94 @@
+---
+- name: Ensure argon2 is installed.
+  ansible.builtin.apt:
+    pkg: argon2
+    state: present
+  become: true
+
+- name: Create vaultwarden directories if they doesn't exist yet.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: 1200
+    group: 1200
+    state: directory
+    mode: 0700
+  become_method: containers.podman.podman_unshare
+  become: true
+  loop:
+    - "{{ containers['data_dir'] }}/vaultwarden/"
+    - "{{ containers['logs_dir'] }}/vaultwarden/"
+
+- name: Create vaultwarden config folder if it doesn't exist yet.
+  ansible.builtin.file:
+    path: "{{ containers['config_dir'] }}/vaultwarden/"
+    state: directory
+    mode: 0700
+
+- name: Generate secure admin token.
+  # https://github.com/dani-garcia/vaultwarden/wiki/enabling-admin-page#secure-the-admin_token
+  ansible.builtin.command:
+    cmd: argon2 "{{ lookup('community.general.random_string', base64=true, length=32) }}" -e -id -k 65540 -t 3 -p 4
+    stdin: "{{ vaultwarden['admin_token'] }}"
+    stdin_add_newline: false
+  register: argon_admin_token
+
+- name: Copy vaultwarden config.
+  ansible.builtin.template:
+    src: vault_env
+    dest: "{{ containers['config_dir'] }}/vaultwarden/vault_env"
+    mode: 0600
+  vars:
+    admin_token: "{{ argon_admin_token.stdout }}"
+
+- name: The first run to setup the certificates.
+  community.docker.docker_container:
+    name: vaultwarden
+    image: "vaultwarden/server:{{ vaultwarden['container_version'] }}"
+    ports:
+      - "{{ containers['loopback_network_address'] }}:10300:80/tcp"
+    mounts:
+      - # vaultwarden data
+          source: "{{ containers['data_dir'] }}/vaultwarden/"
+          target: /data
+          type: bind
+    pull: yes
+    state: started
+    auto_remove: true
+    comparisons:
+      '*': ignore  # by default, ignore *all* options (including image)
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+
+- name: Waits for vaultwarden.
+  ansible.builtin.wait_for:
+    host: "{{ containers['loopback_network_address'] }}"
+    port: 10300
+    delay: 20
+    sleep: 3
+    timeout: 45
+
+- name: Make sure vaultwarden is running.
+  community.docker.docker_container:
+    name: vaultwarden
+    image: "vaultwarden/server:{{ vaultwarden['container_version'] }}"
+    user: '1200:1200'
+    networks:
+      - name: container-network
+    ports:
+      - "{{ containers['loopback_network_address'] }}:10300:10300/tcp"
+      - "{{ containers['loopback_network_address'] }}:10301:3012/tcp"
+    etc_hosts: "{{ containers_etc_hosts }}"
+    mounts:
+      - # vaultwarden data
+          source: "{{ containers['data_dir'] }}/vaultwarden/"
+          target: /data
+          type: bind
+      - # vaultwarden logs
+          source: "{{ containers['logs_dir'] }}/vaultwarden/"
+          target: /data/log
+          type: bind
+    env:
+      TZ: "{{ server['timezone'] }}"
+    state: started
+    restart_policy: unless-stopped
+    env_file: "{{ containers['config_dir'] }}/vaultwarden/vault_env"
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
