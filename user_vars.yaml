@@ -294,6 +294,9 @@ collabora_office:
 
 vaultwarden:
     enabled: true
+    # https://github.com/dani-garcia/vaultwarden
+    # https://hub.docker.com/r/vaultwarden/server/tags
+    container_version: 1.30.5
     # Vaultwarden postgres admin username. This user will be used
     # to setup and access the postgres database for vaultwarden.
     postgres_user: vaultwarden
@@ -301,6 +304,13 @@ vaultwarden:
     #postgres_password:
     # Vaultwarden database name in postgres.
     db_name: vaultwarden_db
+    # Control whether or not the admin panel will be available
+    admin_panel: true
+    # Token for the admin interface.
+    #admin_token
+    # Name shown in the invitation emails that don't come from a
+    # specific organization
+    invitation_org_name: "{{ server['network']['domain_name'] }}"
 
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
