@@ -1,15 +1,18 @@
 ---
 - name: Create all nginx-proxy subdirectories.
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     owner: root
     group: root
     mode: 0700
   become: true
   loop:
-    - "{{ containers['config_dir'] }}/nginx-proxy/conf.d/"
-    - "{{ containers['logs_dir'] }}/nginx-proxy/"
+    - { path: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: true }
+    - { path: "{{ containers['logs_dir'] }}/nginx-proxy/", enabled: true }
+    - { path: "{{ containers['data_dir'] }}/nginx-proxy/", enabled: "{{ ssl_need }}" }
+    - { path: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ template_folder_need }}" }
+  when: item.enabled|bool
 
 - name: Copy all http templates and nginx templates.
   ansible.builtin.copy:
@@ -20,7 +23,11 @@
     mode: 0700
   become: true
   loop:
-    - { src: files/nginx_proxy/conf.d/default.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/" }
+    - { src: files/nginx_proxy/conf.d/default.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: true }
+    - { src: files/nginx_templates/ssl.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ ssl_need }}" }
+    - { src: files/nginx_templates/misc.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ misc_tmpl_need }}" }
+    - { src: files/nginx_templates/common.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ common_tmpl_need }}" }
+  when: item.enabled|bool
 
 - name: Copy all nginx configs.
   ansible.builtin.template:
@@ -32,8 +39,10 @@
   become: true
   loop:
     - { src: nginx_proxy/nginx.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/", enabled: true }
-    - { src: nginx_proxy/conf.d/default.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: true }
     - { src: nginx_proxy/conf.d/bind9.stream.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: "{{ dns['enabled'] }}" }
+    - { src: nginx_proxy/conf.d/homer.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: "{{ homer['enabled'] }}" }
+    - { src: nginx_templates/homer_geo.tmpl,
+        dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ homer['enabled'] }}" }
   when: item.enabled|bool
 
 - name: Set fact with nginx-proxy container ports.
@@ -41,22 +50,22 @@
     proxy_ports: "{{ proxy_ports | default([]) + [item.port] }}"
   loop:
     - { port: '80:80', enabled: true }
+    - { port: '443:443', enabled: "{{ ssl_need }}" }
     - { port: '53:53/tcp', enabled: "{{ dns['enabled'] }}" }
     - { port: '53:53/udp', enabled: "{{ dns['enabled'] }}" }
   when: item.enabled|bool
 
-- name: Set fact with nginx-proxy mount points.
-  ansible.builtin.set_fact:
-    container_mounts: "{{ container_mounts | default(common_container_mounts) }}"
+- name: Include self-signed certficate generation tasks.
+  ansible.builtin.include_tasks: cert_gen.yml
+  when: ssl_need|bool
 
-- name: Make sure the nginx-proxy container is created and running.
-  community.docker.docker_container:
-    name: nginx-proxy
-    image: "nginx:{{ nginx_proxy['container_version'] }}"
-    ports: "{{ proxy_ports }}"
-    mounts: "{{ container_mounts }}"
-    env:
-      TZ: "{{ server['timezone'] | default(ansible_date_time.tz) }}"
-    state: started
-    restart_policy: unless-stopped
-  become: true
+- name: Flush handles before start nginx-proxy container
+  ansible.builtin.meta: flush_handlers
+
+- name: Include tasks to start nginx with self-signed certificates.
+  ansible.builtin.include_tasks: self-signed.yml
+  when: ssl_need|bool
+
+- name: Include task to launch container without ssl.
+  ansible.builtin.include_tasks: non_ssl.yml
+  when: not ssl_need|bool

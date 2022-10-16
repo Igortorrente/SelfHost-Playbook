@@ -1,0 +1,20 @@
+# Allow access to '^/.well-known/'
+location ~ ^/.well-known/ {
+    allow all;
+    access_log off;
+    log_not_found off;
+    autoindex off;
+}
+
+# Prevent nginx HTTP Server Detection
+server_tokens off;
+
+# Remove X-Powered-By, which is an information leak
+fastcgi_hide_header X-Powered-By;
+
+# Handling noisy messages
+location = /favicon.ico { access_log off; log_not_found off; }
+location = /robots.txt {
+  add_header  Content-Type  text/plain;
+  return 200 "User-agent: *\nDisallow: /\n";
+}

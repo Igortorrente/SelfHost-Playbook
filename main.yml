@@ -23,7 +23,9 @@
     - role: roles/containers/infra/postgres/
 
     - role: roles/containers/infra/nginx
-      when: dns['enabled']
+      when: >
+        dns['enabled'] or
+        homer['enabled']
 
     - role: roles/containers/infra/bind9/
       when: dns['enabled']

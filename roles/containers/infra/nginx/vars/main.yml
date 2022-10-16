@@ -1,4 +1,16 @@
 ---
+misc_tmpl_need: |-
+  {{ homer['enabled'] }}
+
+common_tmpl_need: |-
+  {{ misc_tmpl_need }}
+
+ssl_need: |-
+  {{ common_tmpl_need }}
+
+template_folder_need: |-
+  {{ ssl_need }}
+
 common_container_mounts:
   - # nginx config
       source: "{{ containers['config_dir'] }}/nginx-proxy/nginx.conf"
@@ -14,3 +26,32 @@ common_container_mounts:
       source: "{{ containers['logs_dir'] }}/nginx-proxy/"
       target: /var/log/nginx/
       type: bind
+
+template_mount_param:
+  - # template folder
+      source: "{{ containers['config_dir'] }}/nginx-proxy/templates/"
+      target: /etc/nginx/templates/
+      read_only: true
+      type: bind
+
+self_signed_mount_params:
+  - # Private key
+      source: "{{ containers['data_dir'] }}/nginx-proxy/key.pem"
+      target: /etc/ssl/private/privkey.pem
+      read_only: true
+      type: bind
+  - # Fullchain certificate
+      source: "{{ containers['data_dir'] }}/nginx-proxy/cert.pem"
+      target: /etc/ssl/certs/fullchain.pem
+      read_only: true
+      type: bind
+  - # Certificate
+      source: "{{ containers['data_dir'] }}/nginx-proxy/cert.pem"
+      target: /etc/ssl/certs/chain.pem
+      read_only: true
+      type: bind
+
+template_mount: "{{ common_container_mounts + template_mount_param }}"
+self_signed_mount: "{{ template_mount + self_signed_mount_params }}"
+
+local_ipv4_net: "{{ server['network']['ipv4'] | regex_replace('[0-9]+$', '0') }}"

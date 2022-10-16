@@ -48,9 +48,15 @@
         container_version: "{{ nginx_proxy['certbot']['container_version'] | default('1.23') }}"
         email: "{{ nginx_proxy['certbot']['email'] }}"
 
+- name: Sets homer fact.
+  ansible.builtin.set_fact:
+    homer:
+      enabled: "{{ homer['enabled'] | default(true) }}"
+
 - name: Sets bind dns fact.
   ansible.builtin.set_fact:
     dns:
       enabled: "{{ dns['enabled'] | default(false) }}"
       container_version: "{{ dns['container_version'] | default('9.19') }}"
       AAAA_records: "{{ dns['AAAA_records'] | default(true) }}"
+

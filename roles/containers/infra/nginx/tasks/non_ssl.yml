@@ -1,0 +1,12 @@
+---
+- name: Make sure the nginx-proxy container is created and running.
+  community.docker.docker_container:
+    name: nginx-proxy
+    image: "nginx:{{ nginx_proxy['container_version'] }}"
+    ports: "{{ proxy_ports }}"
+    mounts: "{{ common_container_mounts }}"
+    env:
+      TZ: "{{ server['timezone'] }}"
+    state: started
+    restart_policy: unless-stopped
+  become: true

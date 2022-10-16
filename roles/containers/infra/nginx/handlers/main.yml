@@ -1,0 +1,8 @@
+---
+- name: Generate self-signed certificates
+  ansible.builtin.command: openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365 -nodes -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=www.{{ server['network']['domain_name'] }}"
+  args:
+    chdir: "{{ containers['data_dir'] }}/nginx-proxy/"
+  register: openssl
+  failed_when: openssl.rc != 0
+  become: true
