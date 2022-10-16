@@ -59,3 +59,7 @@
 - name: Var vaultwarden_postgres_password.
   ansible.builtin.set_fact:
     vaultwarden_postgres_password: "{{ password_gen }}"
+
+- name: Var vaultwarden_admin_token.
+  ansible.builtin.set_fact:
+    vaultwarden_admin_token: "{{ password_gen }}"
