@@ -301,7 +301,6 @@ vaultwarden:
     #postgres_password:
     # Vaultwarden database name in postgres.
     db_name: vaultwarden_db
-    # The vaultwarden admin username.
 
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
