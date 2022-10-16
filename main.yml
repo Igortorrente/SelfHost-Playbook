@@ -35,7 +35,8 @@
       when: >
         keycloak['enabled'] or
         mailu['enabled'] or
-        nextcloud['enabled']
+        nextcloud['enabled'] or
+        vaultwarden['enabled']
 
     - role: roles/containers/infra/nginx
       when: >

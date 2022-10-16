@@ -139,6 +139,14 @@
       admin: "{{ collabora_office['admin'] | default('admin') }}"
       admin_password: "{{ collabora_office['admin_password'] | default(collabora_office_admin_password) }}"
 
+- name: Sets up the vaultwarden fact and generate vaultwarden passwords if needed.
+  ansible.builtin.set_fact:
+    vaultwarden:
+      enabled: "{{ vaultwarden['enabled'] | default(true) }}"
+      postgres_user: "{{ vaultwarden['postgres_user'] | default('vaultwarden') }}"
+      postgres_password: "{{ vaultwarden['postgres_password'] | default(vaultwarden_postgres_password) }}"
+      db_name: "{{ vaultwarden['db_name'] | default('vaultwarden_db') }}"
+
 - name: Sets up the keycloak fact and generate keycloak passwords if needed.
   ansible.builtin.set_fact:
     keycloak:
