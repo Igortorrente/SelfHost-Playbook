@@ -30,6 +30,9 @@ $TTL    604800
 {% if collabora_office['enabled'] is defined %}
 {{ ipv4_part[3] }}     IN      PTR     collaboraonline.{{ server['network']['domain_name'] }}.
 {% endif %}
+{% if vaultwarden['enabled'] is defined %}
+{{ ipv4_part[3] }}     IN      PTR     vault.{{ server['network']['domain_name'] }}.
+{% endif %}
 
 ; also list other computers
 ;21      IN      PTR     box.example.com.

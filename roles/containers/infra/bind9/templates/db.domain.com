@@ -37,6 +37,10 @@ autodiscover         IN      A       {{ server['network']['ipv4'] }}
 collaboraonline      IN      A       {{ server['network']['ipv4'] }}
 www.collaboraonline  IN      A       {{ server['network']['ipv4'] }}
 {% endif %}
+{% if vaultwarden['enabled'] is defined %}
+vault                IN      A       {{ server['network']['ipv4'] }}
+www.vault            IN      A       {{ server['network']['ipv4'] }}
+{% endif %}
 {% endif %}
 
 {% if server['network']['ipv6'] is defined and dns['AAAA_records'] is true %}
@@ -59,6 +63,10 @@ autodiscover.mail    IN     AAAA     {{ server['network']['ipv6'] }}
 {% if collabora_office['enabled'] is defined %}
 collaboraonline      IN     AAAA     {{ server['network']['ipv6'] }}
 www.collaboraonline  IN     AAAA     {{ server['network']['ipv6'] }}
+{% endif %}
+{% if vaultwarden['enabled'] is defined %}
+vault                IN     AAAA     {{ server['network']['ipv6'] }}
+www.vault            IN     AAAA     {{ server['network']['ipv6'] }}
 {% endif %}
 {% endif %}
 {% if mailu['enabled'] is defined %}
