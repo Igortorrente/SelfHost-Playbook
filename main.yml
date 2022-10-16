@@ -45,7 +45,8 @@
         keycloak['enabled'] or
         mailu['enabled'] or
         nextcloud['enabled'] or
-        collabora_office['enabled']
+        collabora_office['enabled'] or
+        vaultwarden['enabled']
 
     - role: roles/containers/infra/bind9/
       when: dns['enabled']

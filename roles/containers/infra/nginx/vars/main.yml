@@ -4,7 +4,8 @@ misc_tmpl_need: |-
     homer['enabled'] or
     keycloak['enabled'] or
     mailu['enabled'] or
-    collabora_office['enabled']
+    collabora_office['enabled'] or
+    vaultwarden['enabled']
   }}
 
 common_tmpl_need: |-
