@@ -42,7 +42,7 @@
     - { src: files/nginx_templates/misc.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ misc_tmpl_need }}" }
     - { src: files/nginx_templates/common.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ common_tmpl_need }}" }
     - { src: files/nginx_templates/proxy_headers.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/",
-        enabled: "{{ keycloak['enabled'] }}" }
+        enabled: "{{ keycloak['enabled'] or vaultwarden['enabled'] }}" }
     - { src: files/nginx_templates/proxy_headers.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ common_tmpl_need }}" }
     - { src: files/nginx_templates/mailu_proxy.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ mailu['enabled'] }}" }
     - { src: files/nginx_templates/mail_ssl.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ mailu['enabled'] }}" }
@@ -73,6 +73,8 @@
     - { src: nginx_proxy/conf.d/nextcloud.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: "{{ nextcloud['enabled'] }}" }
     - { src: nginx_proxy/conf.d/collabora-online.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/",
         enabled: "{{ collabora_office['enabled'] }}" }
+    - { src: nginx_proxy/conf.d/vaultwarden.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/",
+       enabled: "{{ vaultwarden['enabled'] }}" }
   when: item.enabled|bool
 
 - name: Set fact with nginx-proxy container ports.
