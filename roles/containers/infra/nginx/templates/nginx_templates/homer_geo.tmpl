@@ -1,0 +1,8 @@
+# https://nginx.org/en/docs/http/ngx_http_geo_module.html
+geo $homer_page_port {
+    default 10400;
+    {{ server['network']['ipv4'] }} 10401;
+    127.0.0.0/24 10401;
+    fe80::/64 10401;
+    ::1 10401;
+}

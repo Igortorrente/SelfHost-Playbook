@@ -1,0 +1,31 @@
+ssl_protocols TLSv1.3;
+
+# Fix 'The Logjam Attack'.
+ssl_session_timeout 1d;
+ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
+ssl_session_tickets off;
+ssl_prefer_server_ciphers off;
+
+# Greatly improve the performance of keep-alive connections over SSL.
+# With this enabled, client is not necessary to do a full SSL-handshake for
+# every request, thus saving time and cpu-resources.
+ssl_session_cache shared:SSL:10m;
+
+# OCSP stapling
+ssl_stapling on;
+ssl_stapling_verify on;
+
+# verify chain of trust of OCSP response using Root CA and Intermediate certs
+# https://community.letsencrypt.org/t/howto-ocsp-stapling-for-nginx/13611/7
+# https://www.nginx.com/blog/using-free-ssltls-certificates-from-lets-encrypt-with-nginx/
+ssl_trusted_certificate /etc/ssl/certs/chain.pem;
+ssl_certificate_key /etc/ssl/private/privkey.pem;
+ssl_certificate /etc/ssl/certs/fullchain.pem;
+
+# HSTS settings
+# WARNING: Only add the preload option once you read about
+# the consequences in https://hstspreload.org/. This option
+# will add the domain to a hardcoded list that is shipped
+# in all major browsers and getting removed from this list
+# could take several months.
+#add_header Strict-Transport-Security "max-age=15768000; includeSubDomains; preload;" always;

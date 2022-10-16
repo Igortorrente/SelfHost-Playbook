@@ -1,0 +1,14 @@
+---
+- name: Ensure OpenSSL is installed.
+  ansible.builtin.apt:
+    pkg: openssl
+    state: present
+  become: true
+
+- name: Check if the we have a self-signed certificated available
+  ansible.builtin.stat:
+    path: "{{ containers['data_dir'] }}/nginx-proxy/key.pem"
+  notify: Generate self-signed certificates
+  register: cert
+  changed_when: cert.stat.exists is false
+  become: true

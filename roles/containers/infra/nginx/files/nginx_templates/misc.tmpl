@@ -1,0 +1,4 @@
+include /etc/nginx/templates/common.tmpl;
+
+# Deny all attempts to access hidden files such as .htaccess.
+location ~ /\.ht { deny all; }

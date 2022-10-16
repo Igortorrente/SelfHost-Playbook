@@ -80,6 +80,9 @@ dns:
     # Enable/disables the IPv6 record to the services
     AAAA_records: true
 
+homer:
+    enabled: true
+
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
 # be executed.
