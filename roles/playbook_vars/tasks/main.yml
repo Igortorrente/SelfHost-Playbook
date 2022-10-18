@@ -63,6 +63,19 @@
       allowed_ip: "{{ admin_wireguard['allowed_ip'] | default('20.0.0.2/32') }}"
       listen_port: "{{ admin_wireguard['listen_port'] | default('51820') }}"
 
+- name: Sets up mailu fact and generate passwords if needed.
+  ansible.builtin.set_fact:
+    mailu:
+      enabled: "{{ mailu['enabled'] | default(true) }}"
+      postgres_user: "{{ mailu['postgres_user'] | default('mailu') }}"
+      postgres_password: "{{ mailu['postgres_password'] | default(mailu_postgres_password) }}"
+      db_name: "{{ mailu['db_name'] | default('mailu_db') }}"
+      roundcube:
+        enabled: "{{ mailu['roundcube']['enabled'] | default(true) if mailu['enabled'] else false }}"
+        postgres_user: "{{ mailu['roundcube']['postgres_user'] | default('roundcube') }}"
+        postgres_password: "{{ mailu['roundcube']['postgres_password'] | default(roundcube_postgres_password) }}"
+        db_name: "{{ mailu['roundcube']['db_name'] | default('roundcube_db') }}"
+
 - name: Sets up the keycloak fact and generate keycloak passwords if needed.
   ansible.builtin.set_fact:
     keycloak:

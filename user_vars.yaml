@@ -131,6 +131,28 @@ keycloak:
     # Enables/disabled keycloak health endpoint
     health: true
 
+# Mail server
+mailu:
+    enabled: true
+    # mailu postgres admin username. This user will be used
+    # to setup and access the postgres database for mailu.
+    postgres_user: mailu
+    # mailu postgres password.
+    #postgres_password:
+    # mailu database name in postgres.
+    db_name: mailu_db
+    # Roundcube webmail
+    roundcube:
+        # ** Roundcube will not be installed if mailu isn't **
+        enabled: true
+        # roundcube postgres admin username. This user will be used
+        # to setup and access the postgres database for roundcube.
+        postgres_user: roundcube
+        # roundcube postgres password.
+        #postgres_password:
+        # roundcube database name in postgres.
+        db_name: roundcube_db
+
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
 # be executed.
