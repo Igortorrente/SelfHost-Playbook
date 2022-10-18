@@ -12,7 +12,10 @@
     state: present
   loop:
     - { name: "{{ keycloak['db_name'] }}", enabled: "{{ keycloak['enabled'] }}" }
-  when: item.enabled
+    - { name: "{{ mailu['db_name'] }}", enabled: "{{ mailu['enabled'] }}" }
+    - { name: "{{ mailu['roundcube']['db_name'] }}",
+        enabled: "{{ mailu['roundcube']['enabled'] and mailu['enabled'] }}" }
+  when: item.enabled|bool
 
 - name: Ensure all database users are created.
   community.postgresql.postgresql_user:
@@ -30,7 +33,12 @@
   loop:
     - { name: "{{ keycloak['postgres_user'] }}", password: "{{ keycloak['postgres_password'] }}",
         enabled: "{{ keycloak['enabled'] }}" }
-  when: item.enabled
+    - { name: "{{ mailu['postgres_user'] }}", password: "{{ mailu['postgres_password'] }}",
+        enabled: "{{ mailu['enabled'] }}" }
+    - { name: "{{ mailu['roundcube']['postgres_user'] }}",
+        password: "{{ mailu['roundcube']['postgres_password'] }}",
+        enabled: "{{ mailu['roundcube']['enabled'] and mailu['enabled'] }}" }
+  when: item.enabled|bool
 
 - name: Change database owners to their respective users if they don't have it yet.
   community.postgresql.postgresql_owner:
@@ -45,7 +53,12 @@
   loop:
     - { db: "{{ keycloak['db_name'] }}", obj_name: "{{ keycloak['db_name'] }}",
         new_owner: "{{ keycloak['postgres_user'] }}", enabled: "{{ keycloak['enabled'] }}" }
-  when: item.enabled
+    - { db: "{{ mailu['db_name'] }}", obj_name: "{{ mailu['db_name'] }}",
+        new_owner: "{{ mailu['postgres_user'] }}", enabled: "{{ mailu['enabled'] }}" }
+    - { db: "{{ mailu['roundcube']['db_name'] }}", obj_name: "{{ mailu['roundcube']['db_name'] }}",
+        new_owner: "{{ mailu['roundcube']['postgres_user'] }}",
+        enabled: "{{ mailu['roundcube']['enabled'] }}" }
+  when: item.enabled|bool
 
 - name: Grant database to their respective users if they don't have it yet.
   community.postgresql.postgresql_privs:
@@ -62,4 +75,8 @@
   loop:
     - { db: "{{ keycloak['db_name'] }}", roles: "{{ keycloak['postgres_user'] }}",
         enabled: "{{ keycloak['enabled'] }}" }
-  when: item.enabled
+    - { db: "{{ mailu['db_name'] }}", roles: "{{ mailu['postgres_user'] }}",
+        enabled: "{{ mailu['enabled'] }}" }
+    - { db: "{{ mailu['roundcube']['db_name'] }}", roles: "{{ mailu['roundcube']['postgres_user'] }}",
+        enabled: "{{ mailu['roundcube']['enabled'] }}" }
+  when: item.enabled|bool

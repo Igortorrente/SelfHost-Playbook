@@ -15,3 +15,11 @@
 - name: Var keycloak_admin_password.
   ansible.builtin.set_fact:
     keycloak_admin_password: "{{ password_gen }}"
+
+- name: Var mailu_postgres_password.
+  ansible.builtin.set_fact:
+    mailu_postgres_password: "{{ password_gen }}"
+
+- name: Var roundcube_postgres_password.
+  ansible.builtin.set_fact:
+    roundcube_postgres_password: "{{ password_gen }}"

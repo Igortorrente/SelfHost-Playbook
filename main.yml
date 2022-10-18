@@ -24,7 +24,9 @@
     - role: roles/containers/infra/redis/
 
     - role: roles/containers/infra/postgres/
-      when: keycloak['enabled']
+      when: >
+        keycloak['enabled'] or
+        mailu['enabled']
 
     - role: roles/containers/infra/nginx
       when: >
