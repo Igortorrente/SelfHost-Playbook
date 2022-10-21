@@ -139,6 +139,8 @@ mailu:
     #postgres_password:
     # mailu database name in postgres.
     db_name: mailu_db
+    # The mail domain that will be created.
+    mail_domain: "{{ server['network']['domain_name'] }}"
     # Roundcube webmail
     roundcube:
         # ** Roundcube will not be installed if mailu isn't **

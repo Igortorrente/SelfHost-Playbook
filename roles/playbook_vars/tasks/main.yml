@@ -69,6 +69,7 @@
       postgres_user: "{{ mailu['postgres_user'] | default('mailu') }}"
       postgres_password: "{{ mailu['postgres_password'] | default(mailu_postgres_password) }}"
       db_name: "{{ mailu['db_name'] | default('mailu_db') }}"
+      mail_domain: "{{ mailu['mail_domain'] | default(server['network']['domain_name']) }}"
       roundcube:
         enabled: "{{ mailu['roundcube']['enabled'] | default(true) if mailu['enabled'] else false }}"
         postgres_user: "{{ mailu['roundcube']['postgres_user'] | default('roundcube') }}"
@@ -92,7 +93,7 @@
 - name: Sets bind dns fact.
   ansible.builtin.set_fact:
     dns:
-      enabled: "{{ dns['enabled'] | default(false) }}"
+      enabled: "{{ dns['enabled'] or mailu['enabled'] | default(false) }}"
       container_version: "{{ dns['container_version'] | default('9.19') }}"
       AAAA_records: "{{ dns['AAAA_records'] | default(true) }}"
 
