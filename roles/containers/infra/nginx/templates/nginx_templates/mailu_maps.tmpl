@@ -1,0 +1,5 @@
+map $request_uri $mailu_loggable {
+    /health 0;
+    /auth/email 0;
+    default 1;
+}

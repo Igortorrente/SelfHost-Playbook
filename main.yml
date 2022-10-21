@@ -32,7 +32,8 @@
       when: >
         dns['enabled'] or
         homer['enabled'] or
-        keycloak['enabled']
+        keycloak['enabled'] or
+        mailu['enabled']
 
     - role: roles/containers/infra/bind9/
       when: dns['enabled']
