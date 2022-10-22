@@ -134,6 +134,8 @@ keycloak:
 # Mail server
 mailu:
     enabled: true
+    # https://hub.docker.com/u/mailu
+    container_version: 1.9
     # mailu postgres admin username. This user will be used
     # to setup and access the postgres database for mailu.
     postgres_user: mailu
@@ -143,6 +145,19 @@ mailu:
     db_name: mailu_db
     # The mail domain that will be created.
     mail_domain: "{{ server['network']['domain_name'] }}"
+    # Random 16 bytes string used by mailu.
+    #secret_key:
+    # The admin user account.
+    # It also used as user for DMARC RUA/RUF.
+    # The value here will concatenated with '@{{ mailu['mail_domain'] }}'
+    # to define the account. Ex: 'admin' + '@example.com'
+    postmaster: admin
+    # Postmaster password
+    # postmaster_password:
+    # This is the name that will be used to identify the mail provider
+    # in the admin site.
+    # Use the name of your domain or organization
+    site_name: Example
     # Roundcube webmail
     roundcube:
         # ** Roundcube will not be installed if mailu isn't **
@@ -154,6 +169,13 @@ mailu:
         #postgres_password:
         # roundcube database name in postgres.
         db_name: roundcube_db
+    # Automatic email retrieval (from 3rd-party servers).
+    # Enables or disable fetchmail
+    fetchmail: false
+    # ClamAV® is an open-source antivirus engine for detecting
+    # trojans, viruses, malware & other malicious threats.
+    # Enable or disable antivirus
+    clamav: false
 
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not

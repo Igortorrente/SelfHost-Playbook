@@ -10,6 +10,11 @@
     name: systemd-networkd.service
     enabled: true
   become: true
+  when: >
+    dns['enabled'] or
+    homer['enabled'] or
+    keycloak['enabled'] or
+    mailu['enabled']
 
 - name: Set server timezone.
   community.general.timezone:
@@ -45,3 +50,10 @@
     name: systemd-timesyncd.service
     enabled: true
   become: true
+
+- name: Ensure git is installed.
+  ansible.builtin.apt:
+    pkg: git
+    state: present
+  become: true
+  when: mailu['enabled'] is true

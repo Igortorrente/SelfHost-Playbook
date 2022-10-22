@@ -1,0 +1,18 @@
+---
+- name: Make sure the clamav container is running.
+  community.docker.docker_container:
+    name: clamav
+    image: "mailu/clamav:{{ mailu['container_version'] }}"
+    networks:
+      - name: container-network
+    dns_servers: "{{ mailu_dns }}"
+    etc_hosts: "{{ containers_etc_hosts }}"
+    mounts:
+      - # clamav dir
+        source: "{{ containers['data_dir'] }}/mailu/filter"
+        target: /data
+        type: bind
+    state: started
+    restart_policy: unless-stopped
+    env_file: "{{ containers['config_dir'] }}/mailu/mailu.env"
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock

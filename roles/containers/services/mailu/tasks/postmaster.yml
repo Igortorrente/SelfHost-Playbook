@@ -1,0 +1,11 @@
+---
+- name: Create the mailu postmaster user.
+  community.docker.docker_container_exec:
+    container: mailu-admin
+    command: flask mailu admin {{ mailu['postmaster'] }} {{ mailu['mail_domain'] }} "{{ mailu['postmaster_password'] }}"
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: exec_output
+  changed_when: "'created admin user' in exec_output.stdout"
+  failed_when: >
+    (exec_output.rc != 0) and
+    ('exists, not created' not in exec_output.stderr)

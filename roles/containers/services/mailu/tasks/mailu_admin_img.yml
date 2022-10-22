@@ -1,0 +1,45 @@
+---
+- name: Create temporary mailu-admin directory.
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: mailu_admin_docker
+  register: mailu_admin_temp
+
+- name: Clone mailu-admin repository.
+  ansible.builtin.git:
+    repo: https://github.com/Igortorrente/Mailu-OpenID.git
+    dest: "{{ mailu_admin_temp.path }}"
+    version: lorenzo_openid
+
+- name: Builds mailu base image.
+  community.docker.docker_image:
+    name: base
+    build:
+      path: "{{ mailu_admin_temp.path }}/core/base"
+      rm: yes
+    source: build
+    state: present
+    timeout: 600
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+
+- name: Builds mailu assets image.
+  community.docker.docker_image:
+    name: assets
+    build:
+      path: "{{ mailu_admin_temp.path }}/core/admin/assets"
+      rm: yes
+    source: build
+    state: present
+    timeout: 600
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+
+- name: Builds mailu-admin image.
+  community.docker.docker_image:
+    name: mailu/admin:OpenID
+    build:
+      path: "{{ mailu_admin_temp.path }}/core/admin"
+      rm: yes
+    source: build
+    state: present
+    timeout: 600
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
