@@ -23,3 +23,11 @@
 - name: Var roundcube_postgres_password.
   ansible.builtin.set_fact:
     roundcube_postgres_password: "{{ password_gen }}"
+
+- name: Var mailu_postmaster_password.
+  ansible.builtin.set_fact:
+    mailu_postmaster_password: "{{ password_gen }}"
+
+- name: Var mailu_secret_key.
+  ansible.builtin.set_fact:
+    mailu_secret_key: "{{ mailu_secret_key_gen }}"

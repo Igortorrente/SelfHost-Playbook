@@ -1,0 +1,2 @@
+---
+mailu_dns: "{{ containers_ipv4_addr_base }}.247"

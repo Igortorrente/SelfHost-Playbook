@@ -20,8 +20,14 @@
       when: admin_wireguard['enabled']
 
     - role: roles/system/container_setup/
+      when: >
+        dns['enabled'] or
+        homer['enabled'] or
+        keycloak['enabled'] or
+        mailu['enabled']
 
     - role: roles/containers/infra/redis/
+      when: mailu['enabled']
 
     - role: roles/containers/infra/postgres/
       when: >
@@ -43,3 +49,6 @@
 
     - role: roles/containers/infra/keycloak/
       when: keycloak['enabled']
+
+    - role: roles/containers/services/mailu/
+      when: mailu['enabled']

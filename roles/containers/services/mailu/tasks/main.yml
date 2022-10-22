@@ -1,0 +1,82 @@
+---
+- name: Create mailu folders.
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: "{{ item.user | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    state: directory
+    mode: "{{ item.mode | default('0700') }}"
+  become: true
+  loop:
+    - { path: "{{ containers['config_dir'] }}/mailu/", mode: '0700', enabled: true }
+    - { path: "{{ containers['config_dir'] }}/mailu/overrides/", mode: '0700', enabled: true }
+    - { path: "{{ containers['config_dir'] }}/mailu/overrides/rspamd", mode: '0700', enabled: true }
+    - { path: "{{ containers['config_dir'] }}/mailu/overrides/postfix", mode: '0700', enabled: true }
+    - { path: "{{ containers['config_dir'] }}/mailu/overrides/dovecot", mode: '0700', enabled: true }
+    - { path: "{{ containers['config_dir'] }}/mailu/overrides/roundcube", mode: '0700',
+        enabled: "{{ mailu['roundcube']['enabled'] }}" }
+    - { path: "{{ containers['data_dir'] }}/mailu/", mode: '0700', enabled: true }
+    - { path: "{{ containers['data_dir'] }}/mailu/mailqueue", mode: '0755', enabled: true }
+    - { path: "{{ containers['data_dir'] }}/mailu/filter", mode: '0700', enabled: true }
+    - { path: "{{ containers['data_dir'] }}/mailu/fetchmail", mode: '0700',
+        enabled: "{{ mailu['fetchmail'] }}" }
+    - { path: "{{ containers['data_dir'] }}/mailu/webmail", mode: '0700',
+        enabled: "{{ mailu['roundcube']['enabled'] }}" }
+    - { path: "{{ containers['data_dir'] }}/mailu/mail/", user: 8, group: 12, enabled: true }
+    - { path: "{{ containers['data_dir'] }}/mailu/mail/data", user: 8, group: 12, enabled: true }
+    - { path: "{{ containers['data_dir'] }}/mailu/mail/dkim", user: 8, group: 12, enabled: true }
+    - { path: "{{ containers['logs_dir'] }}/roundcube", user: www-data, group: www-data,
+        enabled: "{{ mailu['roundcube']['enabled'] }}" }
+  become_method: containers.podman.podman_unshare
+  when: item.enabled|bool is true
+
+- name: Copy mailu config.
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner_group | default(ansible_user_uid) }}"
+    group: "{{ item.owner_group | default(ansible_user_gid) }}"
+    mode: 0600
+  become: true
+  loop:
+    - { src: mailu.env, dest: "{{ containers['config_dir'] }}/mailu/", enabled: true }
+    #TODO: change www-data:www-data ASA https://github.com/containers/ansible-podman-collections/pull/455
+    - { src: roundcube.config.inc.php, owner_group: 100032,
+        dest: "{{ containers['config_dir'] }}/mailu/overrides/roundcube/config.php",
+        enabled: "{{ mailu['roundcube']['enabled'] }}" }
+  when: item.enabled|bool is true
+
+- name: Include mailu-admin tasks.
+  ansible.builtin.include_tasks: mailu_admin.yml
+
+- name: Include rspawd tasks.
+  ansible.builtin.include_tasks: rspamd.yml
+
+- name: Include postfix tasks.
+  ansible.builtin.include_tasks: postfix.yml
+
+- name: Include dovecot tasks.
+  ansible.builtin.include_tasks: dovecot.yml
+
+- name: Include fetchmail tasks.
+  ansible.builtin.include_tasks: fetchmail.yml
+  when: mailu['fetchmail']
+
+- name: Include clamav tasks.
+  ansible.builtin.include_tasks: clamav.yml
+  when: mailu['clamav']
+
+- name: Include roundcube tasks.
+  ansible.builtin.include_tasks: roundcube.yml
+  when: mailu['roundcube']['enabled']
+
+- name: Waits for mailu-admin.
+  ansible.builtin.wait_for:
+    host: "{{ containers['loopback_network_address'] }}"
+    port: 10102
+    delay: 10
+    sleep: 3
+    timeout: 120
+
+- name: Include postmaster tasks.
+  ansible.builtin.include_tasks: postmaster.yml

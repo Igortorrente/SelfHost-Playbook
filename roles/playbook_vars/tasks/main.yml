@@ -66,15 +66,22 @@
   ansible.builtin.set_fact:
     mailu:
       enabled: "{{ mailu['enabled'] | default(true) }}"
+      container_version: "{{ mailu['container_version'] | default('1.9') }}"
       postgres_user: "{{ mailu['postgres_user'] | default('mailu') }}"
       postgres_password: "{{ mailu['postgres_password'] | default(mailu_postgres_password) }}"
       db_name: "{{ mailu['db_name'] | default('mailu_db') }}"
       mail_domain: "{{ mailu['mail_domain'] | default(server['network']['domain_name']) }}"
+      secret_key: "{{ mailu['secret_key'] | default(mailu_secret_key) }}"
+      postmaster: "{{ mailu['postmaster'] | default('admin') }}"
+      postmaster_password: "{{ mailu['postmaster_password'] | default(mailu_postmaster_password) }}"
+      site_name: "{{ mailu['site_name'] | default('Example') }}"
       roundcube:
         enabled: "{{ mailu['roundcube']['enabled'] | default(true) if mailu['enabled'] else false }}"
         postgres_user: "{{ mailu['roundcube']['postgres_user'] | default('roundcube') }}"
         postgres_password: "{{ mailu['roundcube']['postgres_password'] | default(roundcube_postgres_password) }}"
         db_name: "{{ mailu['roundcube']['db_name'] | default('roundcube_db') }}"
+      fetchmail: "{{ mailu['fetchmail'] | default(false) }}"
+      clamav: "{{ mailu['clamav'] | default(false) }}"
 
 - name: Sets up the keycloak fact and generate keycloak passwords if needed.
   ansible.builtin.set_fact:

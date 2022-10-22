@@ -1,0 +1,28 @@
+---
+- name: Make sure the roundcube container is running.
+  community.docker.docker_container:
+    name: roundcube
+    image: "mailu/roundcube:{{ mailu['container_version'] }}"
+    networks:
+      - name: container-network
+    dns_servers: "{{ mailu_dns }}"
+    etc_hosts: "{{ containers_etc_hosts }}"
+    ports: "{{ containers['loopback_network_address'] }}:10101:80"
+    mounts:
+      - # webmail dir
+        source: "{{ containers['data_dir'] }}/mailu/webmail/"
+        target: /data/
+        type: bind
+      - # roundcube overrides dir
+        source: "{{ containers['config_dir'] }}/mailu/overrides/roundcube/config.php"
+        target: /overrides/config.php.inc
+        read_only: true
+        type: bind
+      - # roundcube logs dir
+        source: "{{ containers['logs_dir'] }}/roundcube/"
+        target: /var/www/html/logs/
+        type: bind
+    state: started
+    restart_policy: unless-stopped
+    env_file: "{{ containers['config_dir'] }}/mailu/mailu.env"
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
