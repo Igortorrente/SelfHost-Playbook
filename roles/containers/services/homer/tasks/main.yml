@@ -32,6 +32,12 @@
     - { src: files/icons/, dest: "{{ containers['config_dir'] }}/homer/global/", enabled: true }
     - { src: files/tools/, dest: "{{ containers['config_dir'] }}/homer/global/", enabled: true }
     - { src: files/global/manifest.json, dest: "{{ containers['config_dir'] }}/homer/global/", enabled: true }
+      # Homer-local Logos
+    - { src: files/custom_logos/Roundcube_logo.png, dest: "{{ containers['config_dir'] }}/homer/local/icons/",
+        enabled: "{{ mailu['roundcube']['enabled'] }}" }
+      # Homer-global Logos
+    - { src: files/custom_logos/Roundcube_logo.png, dest: "{{ containers['config_dir'] }}/homer/global/icons/",
+        enabled: "{{ mailu['roundcube']['enabled'] }}" }
 
 - name: Copy all homer configs.
   ansible.builtin.template:
