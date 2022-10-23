@@ -67,6 +67,15 @@ services:
   - name: "Applications"
     icon: "fas fa-cloud"
     items:
+{% if mailu['roundcube']['enabled'] is true %}
+      - name: "Roundcube mail"
+        subtitle: "Webmail"
+        url: "https://mail.{{ server['network']['domain_name'] }}"
+        logo: "assets/icons/Roundcube_logo.png"
+        keywords: "email mail roundcube gmail"
+        target: "_blank"
+        tag: "app"
+{% endif %}
 
   - name: "Admin"
     icon: "fas fa-toolbox"
