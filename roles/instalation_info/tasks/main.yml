@@ -1,0 +1,6 @@
+---
+- name: Instalation report at "{{ ansible_user_dir }}/instalation_info.txt".
+  ansible.builtin.template:
+    src: instalation_info.txt
+    dest: "{{ ansible_user_dir }}/"
+    mode: 0600
