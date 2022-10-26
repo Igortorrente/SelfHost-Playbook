@@ -8,6 +8,10 @@
   roles:
     - role: roles/playbook_vars/
 
+    # This is at the beginning so that we can have access to all
+    # passwords in case of anything goes wrong
+    - role: roles/instalation_info
+
     - role: roles/system/basic/
 
     - role: roles/system/vim
