@@ -1,0 +1,138 @@
+Installation plan info
+======================
+
+{% if keycloak['enabled'] is true or
+      nextcloud['enabled'] is true or
+      vaultwarden['enabled'] is true or
+      mailu['enabled'] is true
+%}
+Postgres
+--------
+Admin user: {{ postgres['admin_user'] }}
+Admin password: {{ postgres['admin_passwd'] }}
+Admin database: {{ postgres['admin_db'] }}
+
+{% endif %}
+Redis
+-----
+Host: redis
+Port: 6379
+Password: {{ redis['password'] }}
+Database Number Allocation:
+  - Nextcloud: database 0
+  - Mailu/Roundcube: database 1
+
+{% if admin_wireguard['enabled'] is true %}
+Wireguard admin
+---------------
+Listen address: {{ server['network']['ipv4'] }}:{{ admin_wireguard['listen_port'] }}
+
+Wireguard client instructions
+#############################
+
+1 - Copy the {{ ansible_user_dir }}/wg0.conf from the server to /etc/wireguard/wg0.conf
+    in the client machine.
+2 - Add `nameserver {{ admin_wireguard['address'] | ansible.utils.ipaddr('address') }}` /etc/resolv.conf.
+3 - Start the VPN with `sudo wg-quick up wg0`.
+
+{% endif %}
+{% if keycloak['enabled'] is true %}
+Keycloak
+--------
+Admin user: {{ keycloak['admin'] }}
+Admin password: {{ keycloak['admin_password'] }}
+Database: {{ keycloak['db_name'] }}
+Database user: {{ keycloak['postgres_user'] }}
+Database password: {{ keycloak['postgres_password'] }}
+URL: https://accounts.{{ server['network']['domain_name'] }}
+# Admin accounts only accesible localy
+Admin URL: https://accounts.{{ server['network']['domain_name'] }}/admin/master/
+
+{% if nextcloud['enabled'] is true %}
+Nextcloud OIDC client
+=====================
+client: {{ nextcloud['OIDC']['client_id'] }}
+secret: {{ nextcloud['OIDC']['client_secret'] }}
+
+{% endif %}
+{% if mailu['enabled'] is true %}
+Mailu OIDC client
+=================
+client: {{ mailu['OIDC']['client_id'] }}
+secret: {{ mailu['OIDC']['client_secret'] }}
+{% endif %}
+
+{% endif %}
+{% if nextcloud['enabled'] is true %}
+Nextcloud
+---------
+Admin user: {{ nextcloud['admin'] }}
+Admin password: {{ nextcloud['admin_password'] }}
+Database: {{ nextcloud['db_name'] }}
+Database user: {{ nextcloud['postgres_user'] }}
+Database password: {{ nextcloud['postgres_password'] }}
+High performance backend for files: {{ nextcloud['notify_push'] }}
+URL: https://{{ server['network']['domain_name'] }}
+{% if keycloak['enabled'] is true %}
+Admin URL: https://{{ server['network']['domain_name'] }}/login?direct=1
+{% endif %}
+
+{% endif %}
+{% if collabora_office['enabled'] is true %}
+Collabora Office Online
+-----------------------
+Admin user: {{ collabora_office['admin'] }}
+Admin password: {{ collabora_office['admin_password'] }}
+{% if admin_wireguard['enabled'] is true %}
+# Admin URL only accesible localy
+{% endif %}
+Admin URL: https://collaboraonline.{{ server['network']['domain_name'] }}/browser/dist/admin/admin.html
+
+{% endif %}
+{% if vaultwarden['enabled'] is true %}
+Vaultwarden
+-----------
+Admin token: {{ vaultwarden['admin_token'] }}
+Database: {{ vaultwarden['db_name'] }}
+Database user: {{ vaultwarden['postgres_user'] }}
+Database password: {{ vaultwarden['postgres_password'] }}
+URL: https://vault.{{ server['network']['domain_name'] }}
+{% if admin_wireguard['enabled'] is true %}
+# Admin URL only accesible localy
+{% endif %}
+Admin URL: https://vault.{{ server['network']['domain_name'] }}/admin
+
+{% endif %}
+{% if homer['enabled'] is true %}
+Homer
+-----
+Local URL: https://home.{{ server['network']['domain_name'] }}
+Global URL: https://home.{{ server['network']['domain_name'] }}
+
+{% endif %}
+{% if mailu['enabled'] is true %}
+mailu
+-----
+Database user: {{ mailu['postgres_user'] }}
+Database password: {{ mailu['postgres_password']}}
+Database name: {{ mailu['db_name']}}
+Postmaster: {{ mailu['postmaster'] }}@{{ mailu['mail_domain'] }}
+Postmater password: {{ mailu['postmaster_password'] }}
+Admin URL: https://mail.{{ server['network']['domain_name'] }}/admin/
+
+{% if mailu['roundcube']['enabled'] is true %}
+Roundcube webmail
+-----------------
+Database user: {{ mailu['roundcube']['postgres_user'] }}
+Database password: {{ mailu['roundcube']['postgres_password'] }}
+Database name: {{ mailu['roundcube']['db_name'] }}
+Webmail URL: https://mail.{{ server['network']['domain_name'] }}/webmail/
+
+{% endif %}
+{% if mailu['services_mail']['enabled'] is true %}
+Mailu Services mail
+-------------------
+Email: {{ mailu['services_mail']['username'] }}@{{ mailu['mail_domain'] }}
+Password: {{ mailu['services_mail']['password'] }}
+{% endif %}
+{% endif %}
