@@ -80,3 +80,7 @@
 
 - name: Include postmaster tasks.
   ansible.builtin.include_tasks: postmaster.yml
+
+- name: Include services mail tasks.
+  ansible.builtin.include_tasks: services_mail.yml
+  when: mailu['services_mail']['enabled']

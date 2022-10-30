@@ -177,6 +177,17 @@ mailu:
       #client_secret:
       # Text in the OIDC button at login screen
       button_name: Connect with Accounts Example.com
+    # The used email for the other services(nextcloud, vaultwarden, keycloak)
+    # for their needs.
+    services_mail:
+        # ** This also enables and override any value at services_mail **
+        enabled: true
+        # No-reply user account.
+        # This work the same way as the postmaster. The user name
+        # will be concatenated with '@{{ mailu['mail_domain'] }}'
+        username: no_reply
+        # No reply account password
+        #password:
     # Automatic email retrieval (from 3rd-party servers).
     # Enables or disable fetchmail
     fetchmail: false
