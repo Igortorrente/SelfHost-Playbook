@@ -76,3 +76,12 @@ services:
         target: "_blank"
         tag: "app"
 {% endif %}
+{% if nextcloud['enabled'] is true %}
+      - name: "Nextcloud"
+        subtitle: "Cloud"
+        url: "https://{{ server['network']['domain_name'] }}"
+        logo: "assets/icons/nextcloud_logo.png"
+        keywords: "nextcloud" # optional keyword used for searching purpose
+        target: "_blank" # optional html tag target attribute
+        tag: "app"
+{% endif %}
