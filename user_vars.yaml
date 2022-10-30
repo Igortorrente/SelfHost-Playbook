@@ -89,8 +89,12 @@ dns:
     # Enable/disables the IPv6 record to the services
     AAAA_records: true
 
+# A very simple static homepage for your server.
+# https://github.com/bastienwirtz/homer#using-docker
 homer:
     enabled: true
+    # https://hub.docker.com/r/b4bz/homer
+    container_version: latest
 
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
