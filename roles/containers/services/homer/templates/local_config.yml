@@ -89,3 +89,12 @@ services:
   - name: "Admin"
     icon: "fas fa-toolbox"
     items:
+{% if collabora_office['enabled'] is true %}
+      - name: "Collabora office Admin"
+        subtitle: "Administration page of collabora office code server"
+        url: "https://collaboraoffice.{{ server['network']['domain_name'] }}/browser/dist/admin/admin.html"
+        logo: "assets/icons/collabora_logo.png"
+        keywords: "Online Office collabora libreoffice"
+        target: "_blank"
+        tag: "admin"
+{% endif %}
