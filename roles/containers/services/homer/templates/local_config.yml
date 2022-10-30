@@ -85,6 +85,15 @@ services:
         target: "_blank" # optional html tag target attribute
         tag: "app"
 {% endif %}
+{% if vaultwarden['enabled'] is true %}
+      - name: "Vaultwarden"
+        subtitle: "Password manager"
+        url: "https://vault.{{ server['network']['domain_name'] }}"
+        logo: "assets/icons/bitwarden_logo.png"
+        keywords: "vaultwarden vault password bitwarden"
+        target: "_blank"
+        tag: "app"
+{% endif %}
 
   - name: "Admin"
     icon: "fas fa-toolbox"
@@ -95,6 +104,15 @@ services:
         url: "https://collaboraoffice.{{ server['network']['domain_name'] }}/browser/dist/admin/admin.html"
         logo: "assets/icons/collabora_logo.png"
         keywords: "Online Office collabora libreoffice"
+        target: "_blank"
+        tag: "admin"
+{% endif %}
+{% if vaultwarden['enabled'] is true %}
+      - name: "Vaultwarden Admin"
+        subtitle: "Administration page of Vaultwarden server"
+        url: "https://vault.{{ server['network']['domain_name'] }}/admin"
+        logo: "assets/icons/bitwarden_logo.png"
+        keywords: "vaultwarden bitwarden"
         target: "_blank"
         tag: "admin"
 {% endif %}
