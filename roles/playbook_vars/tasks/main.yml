@@ -86,6 +86,10 @@
         client_id: "{{ mailu['OIDC']['client_id'] | default('mailu') }}"
         client_secret: "{{ mailu['OIDC']['client_secret'] | default(mailu_client_secret) }}"
         button_name: "{{ mailu['OIDC']['button_name'] | default('Connect with Accounts Example.com') }}"
+      services_mail:
+        enabled: "{{ mailu['services_mail']['enabled'] | default(true) }}"
+        username: "{{ mailu['services_mail']['username'] | default('no_reply') }}"
+        password: "{{ mailu['services_mail']['password'] | default(services_mail_password) }}"
       fetchmail: "{{ mailu['fetchmail'] | default(false) }}"
       clamav: "{{ mailu['clamav'] | default(false) }}"
 

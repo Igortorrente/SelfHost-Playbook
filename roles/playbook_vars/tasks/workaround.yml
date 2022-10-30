@@ -39,3 +39,7 @@
 - name: Var mailu_client_secret.
   ansible.builtin.set_fact:
     mailu_client_secret: "{{ keycloak_client_secret_gen }}"
+
+- name: Var services_mail_password.
+  ansible.builtin.set_fact:
+    services_mail_password: "{{ password_gen }}"
