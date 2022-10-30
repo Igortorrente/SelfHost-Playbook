@@ -85,3 +85,12 @@ services:
         target: "_blank" # optional html tag target attribute
         tag: "app"
 {% endif %}
+{% if vaultwarden['enabled'] is true %}
+      - name: "Vaultwarden"
+        subtitle: "Password manager"
+        url: "https://vault.{{ server['network']['domain_name'] }}"
+        logo: "assets/icons/bitwarden_logo.png"
+        keywords: "vaultwarden vault password bitwarden"
+        target: "_blank"
+        tag: "app"
+{% endif %}

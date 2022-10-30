@@ -39,6 +39,8 @@
         enabled: "{{ nextcloud['enabled'] }}" }
     - { src: files/custom_logos/collabora_logo.png, dest: "{{ containers['config_dir'] }}/homer/local/icons/",
         enabled: "{{ collabora_office['enabled'] }}" }
+    - { src: files/custom_logos/bitwarden_logo.png, dest: "{{ containers['config_dir'] }}/homer/local/icons/",
+        enabled: "{{ vaultwarden['enabled'] }}" }
       # Homer-global Logos
     - { src: files/custom_logos/Roundcube_logo.png, dest: "{{ containers['config_dir'] }}/homer/global/icons/",
         enabled: "{{ mailu['roundcube']['enabled'] }}" }
@@ -46,6 +48,8 @@
         enabled: "{{ nextcloud['enabled'] }}" }
     - { src: files/custom_logos/collabora_logo.png, dest: "{{ containers['config_dir'] }}/homer/global/icons/",
         enabled: "{{ collabora_office['enabled'] }}" }
+    - { src: files/custom_logos/bitwarden_logo.png, dest: "{{ containers['config_dir'] }}/homer/global/icons/",
+        enabled: "{{ vaultwarden['enabled'] }}" }
 
 - name: Copy all homer configs.
   ansible.builtin.template:
