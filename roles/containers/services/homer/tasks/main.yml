@@ -1,0 +1,67 @@
+---
+- name: Create all homer folders.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: 1000
+    group: 65533
+    state: directory
+    mode: 0700
+  become_method: containers.podman.podman_unshare
+  become: true
+  loop:
+    - "{{ containers['config_dir'] }}/homer/"
+    - "{{ containers['config_dir'] }}/homer/global/"
+    - "{{ containers['config_dir'] }}/homer/local/"
+
+- name: Copy all homer files/folders.
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: 1000
+    group: 65533
+    mode: 0600
+  become_method: containers.podman.podman_unshare
+  become: true
+  when: item.enabled
+  loop:
+      # Homer-local files
+    - { src: files/icons/, dest: "{{ containers['config_dir'] }}/homer/local/", enabled: true }
+    - { src: files/tools/, dest: "{{ containers['config_dir'] }}/homer/local/", enabled: true }
+    - { src: files/local/manifest.json, dest: "{{ containers['config_dir'] }}/homer/local/", enabled: true }
+      # Homer-global files
+    - { src: files/icons/, dest: "{{ containers['config_dir'] }}/homer/global/", enabled: true }
+    - { src: files/tools/, dest: "{{ containers['config_dir'] }}/homer/global/", enabled: true }
+    - { src: files/global/manifest.json, dest: "{{ containers['config_dir'] }}/homer/global/", enabled: true }
+
+- name: Copy all homer configs.
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: 1000
+    group: 65533
+    mode: 0600
+  become_method: containers.podman.podman_unshare
+  become: true
+  loop:
+    - { src: local_config.yml, dest: "{{ containers['config_dir'] }}/homer/local/config.yml" }
+    - { src: global_config.yml, dest: "{{ containers['config_dir'] }}/homer/global/config.yml" }
+
+- name: Make sure the homer containers are created and running.
+  community.docker.docker_container:
+    name: "{{ item.name }}"
+    image: b4bz/homer:{{ homer['container_version'] }}
+    ports:
+      - "{{ containers['loopback_network_address'] }}:{{ item.port }}:8080"
+    etc_hosts: "{{ containers_etc_hosts }}"
+    mounts:
+      - # bind9 config
+          source: "{{ containers['config_dir'] }}/homer/{{ item.dir }}"
+          target: /www/assets/
+          read_only: true
+          type: bind
+    state: started
+    restart_policy: unless-stopped
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  loop:
+    - { name: homer_global, port: 10400, dir: global }
+    - { name: homer_local, port: 10401, dir: local }

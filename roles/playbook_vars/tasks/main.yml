@@ -52,6 +52,7 @@
   ansible.builtin.set_fact:
     homer:
       enabled: "{{ homer['enabled'] | default(true) }}"
+      container_version: "{{ homer['container_version'] | default('latest') }}"
 
 - name: Sets bind dns fact.
   ansible.builtin.set_fact:
@@ -63,6 +64,7 @@
 - name: Set fact with a list with all ssl domains.
   ansible.builtin.set_fact:
     ssl_domains_list: "{{ ssl_domains_list | default([]) + [item.domain] }}"
+    containers_etc_hosts: "{{ containers_etc_hosts | default({}) | combine({item.domain: server['network']['ipv4']}) }}"
   loop:
     - { domain: "home.{{ server['network']['domain_name'] }}", enabled: "{{ homer['enabled'] }}" }
   when: item.enabled|bool

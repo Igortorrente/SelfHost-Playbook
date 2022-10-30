@@ -29,3 +29,6 @@
 
     - role: roles/containers/infra/bind9/
       when: dns['enabled']
+
+    - role: roles/containers/services/homer
+      when: homer['enabled']
