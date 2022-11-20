@@ -8,3 +8,5 @@ containers_ipv4_addr_base: "{{ containers['subnet'] | ansible.utils.ipaddr('netw
 
 server_ipv4: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
 server_ipv6: "{{ ansible_default_ipv6.address | default(ansible_all_ipv6_addresses[0]) }}"
+
+mailu_smtp_name: "{{ mailu['services_mail']['username'] }}@{{ mailu['mail_domain'] }}"

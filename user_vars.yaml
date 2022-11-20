@@ -198,6 +198,30 @@ mailu:
     # Enable or disable antivirus
     clamav: false
 
+# Several services uses a smtp server to send emails. Like
+# reset password, accounts logins, notifications, etc.
+# This playbook can configure it for you for enabled services.
+# You can also use the mailu['services_mail'] as a service email if
+# enable everything properly.
+# ** All fields will be ignored if mailu['services_mail'] is enabled **
+# ** This struct doesn't have default values **
+# ** This is a global services_mail config for all enabled services **
+services_mail:
+    enabled: false
+    # Valid values: starttls tls off
+    smtp_securty: tls
+    sender_name: no-reply
+    # Valid values: plain login
+    smtp_auth_type: login
+    smtp_host: example.com
+    mail_domain: example.com
+    # Mail server port. Generally:
+    # starttls 587 or 25, tls 465, off 25
+    smtp_port: 465
+    smtp_name: no-reply@example.com
+    # Mail password
+    smtp_password: Password
+
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
 # be executed.
