@@ -376,21 +376,46 @@ ROCKET_WORKERS=4
 ## Mail specific settings, set SMTP_HOST and SMTP_FROM to enable the mail service.
 ## To make sure the email links are pointing to the correct host, set the DOMAIN variable.
 ## Note: if SMTP_USERNAME is specified, SMTP_PASSWORD is mandatory
-#SMTP_HOST=
-#SMTP_FROM=
-#SMTP_FROM_NAME=
+{% if services_mail['enabled'] is true %}
+SMTP_HOST={{ services_mail["smtp_host"] }}
+SMTP_FROM={{ services_mail["smtp_name"] }}@{{ services_mail['mail_domain'] }}
+SMTP_FROM_NAME={{ services_mail["sender_name"] }}
 # ("starttls", "force_tls", "off") Enable a secure connection. Default is "starttls" (Explicit - ports 587 or 25), "force_tls" (Implicit - port 465) or "off", no encryption (port 25)
-#SMTP_SECURITY=force_tls
+{% if services_mail["smtp_securty"] == 'starttls' %}
+SMTP_SECURITY=starttls
+{% elif services_mail["smtp_securty"] == 'tls' %}
+SMTP_SECURITY=force_tls
+{% else %}
+SMTP_SECURITY=off
+{% endif %}
 # Ports 587 (submission) and 25 (smtp) are standard without encryption and with encryption via STARTTLS (Explicit TLS). Port 465 is outdated and used with Implicit TLS.
-#SMTP_PORT=465
-#SMTP_USERNAME=
-#SMTP_PASSWORD=
+SMTP_PORT={{ services_mail["smtp_port"] }}
+SMTP_USERNAME={{ services_mail["smtp_name"] }}@{{ services_mail['mail_domain'] }}
+SMTP_PASSWORD={{ services_mail["smtp_password"] }}
 #SMTP_TIMEOUT=
+{% else %}
+# SMTP_HOST=smtp.domain.tld
+# SMTP_FROM=vaultwarden@domain.tld
+# SMTP_FROM_NAME=Vaultwarden
+# SMTP_SECURITY=starttls # ("starttls", "force_tls", "off") Enable a secure connection. Default is "starttls" (Explicit - ports 587 or 25), "force_tls" (Implicit - port 465) or "off", no encryption (port 25)
+# SMTP_PORT=587          # Ports 587 (submission) and 25 (smtp) are standard without encryption and with encryption via STARTTLS (Explicit TLS). Port 465 (submissions) is used for encrypted submission (Implicit TLS).
+# SMTP_USERNAME=username
+# SMTP_PASSWORD=password
+# SMTP_TIMEOUT=15
+{% endif %}
 
 ## Defaults for SSL is "Plain" and "Login" and nothing for Non-SSL connections.
 ## Possible values: ["Plain", "Login", "Xoauth2"].
 ## Multiple options need to be separated by a comma ','.
-#SMTP_AUTH_MECHANISM="Login"
+{% if services_mail['enabled'] is true %}
+{% if services_mail['smtp_auth_type'] == 'login' %}
+SMTP_AUTH_MECHANISM="Login"
+{% else %}
+SMTP_AUTH_MECHANISM="Plain"
+{% endif %}
+{% else %}
+# SMTP_AUTH_MECHANISM="Plain"
+{% endif %}
 
 ## Server name sent during the SMTP HELO
 ## By default this value should be is on the machine's hostname,
@@ -414,7 +439,15 @@ ROCKET_WORKERS=4
 ## DANGEROUS: This option introduces significant vulnerabilities to man-in-the-middle attacks!
 ## Only use this as a last resort if you are not able to use a valid certificate.
 ## If the Certificate is valid but the hostname doesn't match, please use SMTP_ACCEPT_INVALID_HOSTNAMES instead.
-# SMTP_ACCEPT_INVALID_CERTS=false
+{% if services_mail['enabled'] is true and
+      mailu['enabled'] is true and
+      mailu['services_mail']['enabled'] is true and
+      nginx_proxy['certbot']['enabled'] is false
+%}
+SMTP_ACCEPT_INVALID_CERTS=true
+{% else %}
+SMTP_ACCEPT_INVALID_CERTS=false
+{% endif %}
 
 ## Require new device emails. When a user logs in an email is required to be sent.
 ## If sending the email fails the login attempt will fail!!
