@@ -92,6 +92,19 @@
       fetchmail: "{{ mailu['fetchmail'] | default(false) }}"
       clamav: "{{ mailu['clamav'] | default(false) }}"
 
+- name: Sets up services_mail fact.
+  ansible.builtin.set_fact:
+    services_mail:
+      enabled: "{{ true if mailu['enabled'] and mailu['services_mail']['enabled'] else services_mail['enabled'] }}"
+      smtp_securty: "{{ 'tls' if mailu['services_mail']['enabled'] else services_mail['smtp_securty'] }}"
+      sender_name: "{{ mailu['services_mail']['username'] if mailu['services_mail']['enabled'] else services_mail['sender_name'] }}"
+      smtp_auth_type: "{{ 'login' if mailu['services_mail']['enabled'] else services_mail['smtp_auth_type'] }}"
+      smtp_host: "{{ 'mail.' + server['network']['domain_name'] if mailu['enabled'] and mailu['services_mail']['enabled'] else services_mail['smtp_host'] }}"
+      mail_domain: "{{ mailu['mail_domain'] if mailu['services_mail']['enabled'] else services_mail['mail_domain'] }}"
+      smtp_port: "{{ 465 if mailu['services_mail']['enabled'] else services_mail['smtp_port'] }}"
+      smtp_name: "{{ mailu['services_mail']['username'] if mailu['services_mail']['enabled'] else services_mail['smtp_name'] }}"
+      smtp_password: "{{ mailu['services_mail']['password'] if mailu['services_mail']['enabled'] else services_mail['smtp_password'] }}"
+
 - name: Sets up the keycloak fact and generate keycloak passwords if needed.
   ansible.builtin.set_fact:
     keycloak:
