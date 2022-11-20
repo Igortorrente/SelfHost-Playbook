@@ -1,0 +1,21 @@
+# syntax=docker/dockerfile:1
+FROM debian:bookworm
+
+# install app dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends python3-pip wget python3-dev iptables
+
+RUN wget http://ftp.debian.org/debian/pool/main/v/vagrant/vagrant_2.3.4+dfsg-1+deb12u1_all.deb && \
+    wget http://ftp.debian.org/debian/pool/main/v/vagrant-libvirt/vagrant-libvirt_0.11.2-1_all.deb && \
+    apt install -y --no-install-recommends /vagrant_2.3.4+dfsg-1+deb12u1_all.deb && \
+    apt install -y --no-install-recommends /vagrant-libvirt_0.11.2-1_all.deb  && \
+    rm vagrant_2.3.4+dfsg-1+deb12u1_all.deb vagrant-libvirt_0.11.2-1_all.deb
+
+RUN pip install --break-system-packages yamllint ansible-lint netaddr \
+    molecule==25.1.0 ansible==11.2 'molecule-plugins[vagrant]==23.7.0'
+
+RUN vagrant box add --provider=libvirt --no-tty debian/bookworm64
+#RUN vagrant box add --provider=libvirt --no-tty debian/trixie64
+
+WORKDIR /repo
+
+CMD ["molecule", "test"]
