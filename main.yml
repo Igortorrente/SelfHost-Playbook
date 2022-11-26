@@ -16,6 +16,9 @@
     - role: roles/system/zsh
       when: optional_roles['zsh']
 
+    - role: roles/system/wireguard
+      when: admin_wireguard['enabled']
+
     - role: roles/system/container_setup/
 
     - role: roles/containers/infra/redis/

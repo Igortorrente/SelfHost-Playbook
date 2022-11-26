@@ -94,6 +94,17 @@ homer:
     # https://hub.docker.com/r/b4bz/homer
     container_version: latest
 
+# Setups VPN to access the admin interface of some services.
+# When enabled all admin interfaces will not be accessible without
+# the VPN connection
+admin_wireguard:
+    enabled: true
+    # The wg0 interface address
+    address: 20.0.0.1/24
+    # The ip of
+    allowed_ip: 20.0.0.2/32
+    listen_port: 51820
+
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
 # be executed.

@@ -54,6 +54,14 @@
       enabled: "{{ homer['enabled'] | default(true) }}"
       container_version: "{{ homer['container_version'] | default('latest') }}"
 
+- name: Sets up the admin_wireguard fact.
+  ansible.builtin.set_fact:
+    admin_wireguard:
+      enabled: "{{ admin_wireguard['enabled'] | default(true) }}"
+      address: "{{ admin_wireguard['address'] | default('20.0.0.1/24') }}"
+      allowed_ip: "{{ admin_wireguard['allowed_ip'] | default('20.0.0.2/32') }}"
+      listen_port: "{{ admin_wireguard['listen_port'] | default('51820') }}"
+
 - name: Sets bind dns fact.
   ansible.builtin.set_fact:
     dns:

@@ -1,0 +1,7 @@
+---
+- name: Make sure the ip_forward is enabled
+  ansible.builtin.command:
+    cmd: sysctl -w net.ipv4.ip_forward=1
+  register: sysctl
+  failed_when: sysctl.rc != 0
+  when: ip_forward.changed is true
