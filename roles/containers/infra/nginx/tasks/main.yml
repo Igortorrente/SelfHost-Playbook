@@ -1,0 +1,59 @@
+---
+- name: Create all nginx-proxy subdirectories.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+  become: true
+  loop:
+    - "{{ containers['config_dir'] }}/nginx-proxy/conf.d/"
+    - "{{ containers['logs_dir'] }}/nginx-proxy/"
+
+- name: Copy all http templates and nginx templates.
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0700
+  become: true
+  loop:
+    - { src: files/nginx_proxy/conf.d/default.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/" }
+
+- name: Copy all nginx configs.
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0600
+  become: true
+  loop:
+    - { src: nginx_proxy/nginx.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/", enabled: true }
+    - { src: nginx_proxy/conf.d/default.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: true }
+  when: item.enabled|bool
+
+- name: Set fact with nginx-proxy container ports.
+  ansible.builtin.set_fact:
+    proxy_ports: "{{ proxy_ports | default([]) + [item.port] }}"
+  loop:
+    - { port: '80:80', enabled: true }
+  when: item.enabled|bool
+
+- name: Set fact with nginx-proxy mount points.
+  ansible.builtin.set_fact:
+    container_mounts: "{{ container_mounts | default(common_container_mounts) }}"
+
+- name: Make sure the nginx-proxy container is created and running.
+  community.docker.docker_container:
+    name: nginx-proxy
+    image: "nginx:{{ nginx_proxy['container_version'] }}"
+    ports: "{{ proxy_ports }}"
+    mounts: "{{ container_mounts }}"
+    env:
+      TZ: "{{ server['timezone'] | default(ansible_date_time.tz) }}"
+    state: started
+    restart_policy: unless-stopped
+  become: true

@@ -27,6 +27,8 @@ containers:
     cache_dir: "{{ ansible_user_dir }}/containers_cache"
     # This folder will contain the config used by some services.
     config_dir: "{{ ansible_user_dir }}/containers_config"
+    # This folder will contain the containers's logs of some services.
+    logs_dir: "{{ ansible_user_dir }}/containers_logs"
     # This network is a second loopback interface used for some containers
     # when they need expose any port to the host without exposing it outside
     # the server.
@@ -50,6 +52,10 @@ redis:
     container_version: 8-bookworm
     # The password for the redis user.
     #password:
+
+nginx_proxy:
+    # https://hub.docker.com/_/nginx
+    container_version: 1.29
 
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not

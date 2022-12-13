@@ -18,6 +18,7 @@
       data_dir: "{{ containers['data_dir'] | default(ansible_user_dir + '/containers_data') }}"
       cache_dir: "{{ containers['cache_dir'] | default(ansible_user_dir + '/containers_cache') }}"
       config_dir: "{{ containers['config_dir'] | default(ansible_user_dir + '/containers_config') }}"
+      logs_dir: "{{ containers['logs_dir'] | default(ansible_user_dir + '/containers_logs') }}"
       loopback_network_address: "{{ containers['loopback_network_address'] | default('10.0.0.1') }}"
       subnet: "{{ containers['subnet'] | default('192.168.203.0/24') }}"
 
@@ -34,3 +35,12 @@
     redis:
       container_version: "{{ redis['container_version'] | default('8-bookworm') }}"
       password: "{{ redis['password'] | default(redis_password) }}"
+
+- name: Sets nginx_proxy fact.
+  ansible.builtin.set_fact:
+    nginx_proxy:
+      container_version: "{{ nginx_proxy['container_version'] | default('1.29') }}"
+      certbot:
+        enabled: "{{ nginx_proxy['certbot']['enabled'] | default(true) }}"
+        container_version: "{{ nginx_proxy['certbot']['container_version'] | default('1.23') }}"
+        email: "{{ nginx_proxy['certbot']['email'] }}"

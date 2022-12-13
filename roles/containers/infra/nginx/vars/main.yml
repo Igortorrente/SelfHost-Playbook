@@ -1,0 +1,16 @@
+---
+common_container_mounts:
+  - # nginx config
+      source: "{{ containers['config_dir'] }}/nginx-proxy/nginx.conf"
+      target: /etc/nginx/nginx.conf
+      read_only: true
+      type: bind
+  - # conf.d directory
+      source: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/"
+      target: /etc/nginx/conf.d/
+      read_only: true
+      type: bind
+  - # Logs
+      source: "{{ containers['logs_dir'] }}/nginx-proxy/"
+      target: /var/log/nginx/
+      type: bind
