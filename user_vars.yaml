@@ -318,3 +318,5 @@ vaultwarden:
 optional_roles:
     vim: true
     zsh: true
+    # enables fail2ban for some services. (Currently only vaultwarden)
+    fail2ban: true

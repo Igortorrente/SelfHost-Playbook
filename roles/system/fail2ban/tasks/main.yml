@@ -1,0 +1,36 @@
+---
+- name: Ensure fail2ban is installed.
+  ansible.builtin.apt:
+    pkg:
+      - fail2ban
+    state: present
+  notify: Enable fail2ban service
+  become: true
+
+- name: Copy all .conf to their respective place.
+  ansible.builtin.copy:
+    src: files/filter.d/{{ item.src }}
+    dest: /etc/fail2ban/filter.d/
+    owner: root
+    group: root
+    mode: '0640'
+  become: true
+  notify: Reload fail2ban service
+  when: item.enabled
+  loop:
+    - { src: vaultwarden-admin.conf, enabled: "{{ vaultwarden['enabled'] }}" }
+    - { src: vaultwarden.conf, enabled: "{{ vaultwarden['enabled'] }}" }
+
+- name: Copy all .local to their respective place.
+  ansible.builtin.template:
+    src: jail.d/{{ item.src }}
+    dest: /etc/fail2ban/jail.d/
+    owner: root
+    group: root
+    mode: '0640'
+  notify: Reload fail2ban service
+  become: true
+  when: item.enabled
+  loop:
+    - { src: vaultwarden-admin.local, enabled: "{{ vaultwarden['enabled'] }}" }
+    - { src: vaultwarden.local, enabled: "{{ vaultwarden['enabled'] }}" }

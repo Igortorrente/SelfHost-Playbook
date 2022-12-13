@@ -1,0 +1,11 @@
+# https://github.com/dani-garcia/vaultwarden/wiki/Fail2Ban-Setup#jail
+
+[vaultwarden-admin]
+enabled = true
+port = 80,443
+filter = vaultwarden-admin
+action = iptables-allports[name=vaultwarden, chain=FORWARD]
+logpath = {{ containers['logs_dir'] }}/vaultwarden/vault.log
+maxretry = 5
+bantime = 7200
+findtime = 1800
