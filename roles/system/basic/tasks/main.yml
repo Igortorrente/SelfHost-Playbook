@@ -15,3 +15,12 @@
   community.general.timezone:
     name: "{{ server['timezone'] }}"
   become: true
+
+- name: Make /etc/hosts is updated with all domain names.
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ server['network']['ipv4'] }} {{ ssl_domains_list | flatten | join(' ') }}"
+    insertafter: EOF
+    state: present
+  become: true
+  when: ssl_domains_list is defined
