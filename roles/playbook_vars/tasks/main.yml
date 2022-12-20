@@ -183,4 +183,5 @@
     - { domain: "autodiscover.{{ server['network']['domain_name'] }}", enabled: "{{ mailu['enabled'] }}" }
     - { domain: "{{ server['network']['domain_name'] }}", enabled: "{{ nextcloud['enabled'] }}" }
     - { domain: "collaboraonline.{{ server['network']['domain_name'] }}", enabled: "{{ collabora_office['enabled'] }}" }
+    - { domain: "vault.{{ server['network']['domain_name'] }}", enabled: "{{ vaultwarden['enabled'] }}" }
   when: item.enabled|bool
