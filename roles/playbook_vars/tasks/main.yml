@@ -104,4 +104,7 @@
   loop:
     - { domain: "home.{{ server['network']['domain_name'] }}", enabled: "{{ homer['enabled'] }}" }
     - { domain: "accounts.{{ server['network']['domain_name'] }}", enabled: "{{ keycloak['enabled'] }}" }
+    - { domain: "mail.{{ server['network']['domain_name'] }}", enabled: "{{ mailu['enabled'] }}" }
+    - { domain: "autoconfig.{{ server['network']['domain_name'] }}", enabled: "{{ mailu['enabled'] }}" }
+    - { domain: "autodiscover.{{ server['network']['domain_name'] }}", enabled: "{{ mailu['enabled'] }}" }
   when: item.enabled|bool
