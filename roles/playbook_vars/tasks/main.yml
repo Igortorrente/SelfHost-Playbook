@@ -83,4 +83,5 @@
     containers_etc_hosts: "{{ containers_etc_hosts | default({}) | combine({item.domain: server['network']['ipv4']}) }}"
   loop:
     - { domain: "home.{{ server['network']['domain_name'] }}", enabled: "{{ homer['enabled'] }}" }
+    - { domain: "accounts.{{ server['network']['domain_name'] }}", enabled: "{{ keycloak['enabled'] }}" }
   when: item.enabled|bool
