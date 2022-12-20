@@ -60,3 +60,9 @@
       container_version: "{{ dns['container_version'] | default('9.19') }}"
       AAAA_records: "{{ dns['AAAA_records'] | default(true) }}"
 
+- name: Set fact with a list with all ssl domains.
+  ansible.builtin.set_fact:
+    ssl_domains_list: "{{ ssl_domains_list | default([]) + [item.domain] }}"
+  loop:
+    - { domain: "home.{{ server['network']['domain_name'] }}", enabled: "{{ homer['enabled'] }}" }
+  when: item.enabled|bool
