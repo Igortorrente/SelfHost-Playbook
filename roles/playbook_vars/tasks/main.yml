@@ -146,4 +146,5 @@
     - { domain: "mail.{{ server['network']['domain_name'] }}", enabled: "{{ mailu['enabled'] }}" }
     - { domain: "autoconfig.{{ server['network']['domain_name'] }}", enabled: "{{ mailu['enabled'] }}" }
     - { domain: "autodiscover.{{ server['network']['domain_name'] }}", enabled: "{{ mailu['enabled'] }}" }
+    - { domain: "{{ server['network']['domain_name'] }}", enabled: "{{ nextcloud['enabled'] }}" }
   when: item.enabled|bool
