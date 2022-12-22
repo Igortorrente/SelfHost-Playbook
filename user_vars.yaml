@@ -128,6 +128,8 @@ keycloak:
     db_name: keycloak_db
     # Enables/disabled keycloak metrics endpoint
     metrics: false
+    # Enables/disabled keycloak health endpoint
+    health: true
 
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
