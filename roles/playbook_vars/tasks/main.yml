@@ -74,6 +74,7 @@
       admin: "{{ keycloak['admin'] | default('admin') }}"
       admin_password: "{{ keycloak['admin_password'] | default(keycloak_admin_password) }}"
       metrics: "{{ keycloak['metrics'] | default(false) }}"
+      health: "{{ keycloak['health'] | default(false) }}"
 
 - name: Sets bind dns fact.
   ansible.builtin.set_fact:
