@@ -85,6 +85,10 @@
   ansible.builtin.include_tasks: certbot.yml
   when: certbot_needed|bool
 
+- name: Include certbot service tasks.
+  ansible.builtin.include_tasks: certbot_systemd_services.yml
+  when: certbot_needed|bool
+
 - name: Include task to launch container without ssl.
   ansible.builtin.include_tasks: non_ssl.yml
   when: not ssl_need|bool

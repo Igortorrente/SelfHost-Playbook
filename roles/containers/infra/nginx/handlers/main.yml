@@ -6,3 +6,17 @@
   register: openssl
   failed_when: openssl.rc != 0
   become: true
+
+- name: Enable certbot related systemd units
+  ansible.builtin.systemd:
+    name: "{{ item.name }}"
+    scope: "{{ item.scope }}"
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: "{{ item.su }}"
+  loop:
+    - { name: certbot.service, scope: user, su: false }
+    - { name: certbot.timer, scope: user, su: false }
+    - { name: nginx_cert_update.service, scope: system, su: true }
+    - { name: nginx_cert_update.timer, scope: system, su: true }

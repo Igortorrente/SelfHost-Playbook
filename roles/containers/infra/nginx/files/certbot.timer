@@ -1,0 +1,17 @@
+[Unit]
+Description=Weekly renewal of Let's Encrypt's certificates
+
+[Timer]
+#Execute job if it missed a run due to machine being off
+Persistent=true
+#Run 120 seconds after boot for the first time
+OnBootSec=120
+OnCalendar=weekly
+#Randomly stagger the start time of each timer
+RandomizedDelaySec=4h
+#File describing job to execute
+Unit=certbot.service
+
+
+[Install]
+WantedBy=timers.target
