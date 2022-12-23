@@ -3,16 +3,31 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    owner: root
-    group: root
-    mode: 0700
+    owner: "{{ item.owner_group }}"
+    group: "{{ item.owner_group }}"
+    mode: "{{ item.mode | default('0700') }}"
   become: true
   loop:
-    - { path: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: true }
-    - { path: "{{ containers['logs_dir'] }}/nginx-proxy/", enabled: true }
-    - { path: "{{ containers['data_dir'] }}/nginx-proxy/", enabled: "{{ ssl_need }}" }
-    - { path: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ template_folder_need }}" }
+    - { path: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", owner_group: root, enabled: true }
+    - { path: "{{ containers['logs_dir'] }}/nginx-proxy/", owner_group: root, enabled: true }
+    - { path: "{{ containers['data_dir'] }}/nginx-proxy/", owner_group: root, enabled: "{{ ssl_need }}" }
+    - { path: "{{ containers['config_dir'] }}/nginx-proxy/templates/", owner_group: root, enabled: "{{ template_folder_need }}" }
   when: item.enabled|bool
+
+- name: Create all letsencrypt subdirectories.
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: 1100
+    group: 1100
+    mode: "{{ item.mode | default('0700') }}"
+  become_method: containers.podman.podman_unshare
+  become: true
+  loop:
+    - { path: "{{ containers['data_dir'] }}/letsencrypt/www", mode: '0755' }
+    - { path: "{{ containers['data_dir'] }}/letsencrypt/lib" }
+    - { path: "{{ containers['logs_dir'] }}/letsencrypt/" }
+  when: "certbot_needed"
 
 - name: Copy all http templates and nginx templates.
   ansible.builtin.copy:
@@ -64,7 +79,11 @@
 
 - name: Include tasks to start nginx with self-signed certificates.
   ansible.builtin.include_tasks: self-signed.yml
-  when: ssl_need|bool
+  when: ssl_need|bool and not certbot_needed|bool
+
+- name: Include certbot tasks.
+  ansible.builtin.include_tasks: certbot.yml
+  when: certbot_needed|bool
 
 - name: Include task to launch container without ssl.
   ansible.builtin.include_tasks: non_ssl.yml

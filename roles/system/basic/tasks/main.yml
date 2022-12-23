@@ -24,3 +24,12 @@
     state: present
   become: true
   when: ssl_domains_list is defined
+
+- name: Ensures the user's systemd folder is inplace.
+  ansible.builtin.file:
+    path: "{{ ansible_user_dir }}/.config/systemd/user"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    state: directory
+    mode: 0740
+  when: nginx_proxy['certbot']['enabled'] is true

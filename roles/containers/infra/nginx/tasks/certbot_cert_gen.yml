@@ -1,0 +1,53 @@
+---
+- name: Make sure the nginx-proxy container is created and running.
+  community.docker.docker_container:
+    name: nginx-proxy
+    image: "nginx:{{ nginx_proxy['container_version'] }}"
+    ports: "{{ proxy_ports }}"
+    mounts: "{{ self_signed_mount + [certbot_www_mount] }}"
+    state: started
+    restart_policy: unless-stopped
+  become: true
+
+- name: Waits for proxy.
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 80
+    sleep: 3
+    delay: 8
+    timeout: 30
+
+- name: Get the letsencrypt certificates.
+  community.docker.docker_container:
+    name: certbot
+    image: "certbot/certbot:{{ nginx_proxy['certbot']['container_version'] }}"
+    user: 1100:1100
+    mounts:
+      - "{{ certbot_www_mount }}"
+      - # letsencrypt lib folder
+          source: "{{ containers['data_dir'] }}/letsencrypt/lib"
+          target: /var/lib/letsencrypt/
+          type: bind
+      - # letsencrypt logs folder
+          source: "{{ containers['logs_dir'] }}/letsencrypt/"
+          target: /var/log/letsencrypt/
+          type: bind
+      - # letsencrypt logs folder
+          source: "{{ containers['data_dir'] }}/letsencrypt/"
+          target: /etc/letsencrypt
+          type: bind
+    env:
+      TZ: "{{ server['timezone'] }}"
+    pull: yes
+    state: started
+    auto_remove: true
+    # I'm using `{% for ... %}` because: https://stackoverflow.com/a/49799596
+    command: >
+      certonly -n -m "{{ nginx_proxy['certbot']['email'] }}"
+      --agree-tos --webroot --webroot-path /var/www/certbot/
+      {% for domain in ssl_domains_list %} "-d {{ domain }}" {% endfor %}
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+
+- name: Waits certbot acquire the certificate.
+  ansible.builtin.wait_for:
+    timeout: 80
