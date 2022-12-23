@@ -38,7 +38,6 @@
     mode: 0700
   become: true
   loop:
-    - { src: files/nginx_proxy/conf.d/default.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: true }
     - { src: files/nginx_templates/ssl.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ ssl_need }}" }
     - { src: files/nginx_templates/misc.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ misc_tmpl_need }}" }
     - { src: files/nginx_templates/common.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ common_tmpl_need }}" }
@@ -54,6 +53,7 @@
   become: true
   loop:
     - { src: nginx_proxy/nginx.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/", enabled: true }
+    - { src: nginx_proxy/conf.d/default.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: true }
     - { src: nginx_proxy/conf.d/bind9.stream.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: "{{ dns['enabled'] }}" }
     - { src: nginx_proxy/conf.d/homer.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: "{{ homer['enabled'] }}" }
     - { src: nginx_templates/homer_geo.tmpl,
