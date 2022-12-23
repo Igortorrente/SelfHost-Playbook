@@ -45,7 +45,7 @@
       container_version: "{{ nginx_proxy['container_version'] | default('1.25') }}"
       certbot:
         enabled: "{{ nginx_proxy['certbot']['enabled'] | default(true) }}"
-        container_version: "{{ nginx_proxy['certbot']['container_version'] | default('1.23') }}"
+        container_version: "{{ nginx_proxy['certbot']['container_version'] | default('v1.32.2') }}"
         email: "{{ nginx_proxy['certbot']['email'] }}"
 
 - name: Sets homer fact.

@@ -1,0 +1,47 @@
+---
+- name: Check if certbot's files are inplace.
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: cert_keys
+  become: true
+  loop:
+    - "{{ containers['data_dir'] }}/letsencrypt/live/{{ ssl_domains_list[0] }}/privkey.pem"
+    - "{{ containers['data_dir'] }}/letsencrypt/live/{{ ssl_domains_list[0] }}/fullchain.pem"
+    - "{{ containers['data_dir'] }}/letsencrypt/live/{{ ssl_domains_list[0] }}/chain.pem"
+
+- name: Include tasks to obtain letsencrypt certificate.
+  ansible.builtin.include_tasks: certbot_cert_gen.yml
+  when: '"False" in cert_keys.results | map(attribute="stat.exists") | flatten | join(" ") | string'
+
+- name: Add certbot mounts to nginx-proxy mount points.
+  ansible.builtin.set_fact:
+    cerbot_nginx_mounts: "{{ cerbot_nginx_mounts | default(template_mount) + [item] }}"
+  loop:
+    - # Private key
+        source: "{{ containers['data_dir'] }}/letsencrypt/live/{{ ssl_domains_list[0] }}/privkey.pem"
+        target: /etc/ssl/private/privkey.pem
+        read_only: true
+        type: bind
+    - # Fullchain certificate
+        source: "{{ containers['data_dir'] }}/letsencrypt/live/{{ ssl_domains_list[0] }}/fullchain.pem"
+        target: /etc/ssl/certs/fullchain.pem
+        read_only: true
+        type: bind
+    - # Certificate
+        source: "{{ containers['data_dir'] }}/letsencrypt/live/{{ ssl_domains_list[0] }}/chain.pem"
+        target: /etc/ssl/certs/chain.pem
+        read_only: true
+        type: bind
+    - "{{ certbot_www_mount }}"
+
+- name: Make sure the nginx-proxy container is created and running.
+  community.docker.docker_container:
+    name: nginx-proxy
+    image: "nginx:{{ nginx_proxy['container_version'] }}"
+    ports: "{{ proxy_ports }}"
+    mounts: "{{ cerbot_nginx_mounts }}"
+    env:
+      TZ: "{{ server['timezone'] }}"
+    state: started
+    restart_policy: unless-stopped
+  become: true

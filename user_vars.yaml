@@ -68,6 +68,15 @@ redis:
 nginx_proxy:
     # https://hub.docker.com/_/nginx
     container_version: 1.25
+    certbot:
+        enabled: false
+        # https://hub.docker.com/_/nginx
+        container_version: v1.32.2
+        # Email used to to register to receive notification
+        # about the certificate expiration.
+        # ** This must be set with a valid email **
+        # ** Don't put the services_mail email **
+        email: test@example.com
 
 # bind9 DNS
 dns:
