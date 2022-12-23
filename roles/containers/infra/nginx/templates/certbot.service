@@ -1,0 +1,12 @@
+# https://www.freedesktop.org/software/systemd/man/systemd.unit.html#Specifiers
+[Unit]
+Description=Let's Encrypt renewal
+Requires=docker.service
+
+[Service]
+Type=oneshot
+Environment=DOCKER_HOST=unix:///run/user/%U/docker.sock
+ExecStart=/usr/bin/docker run --rm -v {{ containers['data_dir'] }}/letsencrypt/:/etc/letsencrypt/ -v {{ containers['data_dir'] }}/letsencrypt/www/:/var/www/certbot -v {{ containers['logs_dir'] }}/letsencrypt/:/var/log/letsencrypt/ -v {{ containers['data_dir'] }}/letsencrypt/lib:/var/lib/letsencrypt --user 1100:1100 --name certbot certbot/certbot:{{ nginx_proxy['certbot']['container_version'] }} renew -n --agree-tos
+
+[Install]
+WantedBy=default.target

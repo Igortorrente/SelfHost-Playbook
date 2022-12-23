@@ -1,0 +1,24 @@
+---
+- name: Copy user systemd certbot.timer file.
+  ansible.builtin.copy:
+    src: files/{{ item.src }}
+    dest: "{{ item.dest }}"
+    owner: "{{ item.user_group }}"
+    group: "{{ item.user_group }}"
+    mode: 0640
+  become: true
+  notify: Enable certbot related systemd units
+  loop:
+    - { src: certbot.timer, dest: "{{ ansible_user_dir }}/.config/systemd/user",
+      user_group: "{{ ansible_user_id }}" }
+    - { src: nginx_cert_update.service, dest: /lib/systemd/system/, user_group: root }
+    - { src: nginx_cert_update.timer, dest: /lib/systemd/system/, user_group: root }
+
+- name: Copy user systemd certbot.service file.
+  ansible.builtin.template:
+    src: certbot.service
+    dest: "{{ ansible_user_dir }}/.config/systemd/user"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: 0640
+  notify: Enable certbot related systemd units
