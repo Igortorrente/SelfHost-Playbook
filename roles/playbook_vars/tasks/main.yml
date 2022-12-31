@@ -1,4 +1,14 @@
 ---
+- name: Get get the timezone information.
+  ansible.builtin.slurp:
+    src: "/etc/timezone"
+  register: tz
+
+- name: Set the server fact.
+  ansible.builtin.set_fact:
+    server:
+      timezone: "{{ server['timezone'] | default(tz['content'] | b64decode | trim) }}"
+
 - name: Set the containers fact.
   ansible.builtin.set_fact:
     containers:

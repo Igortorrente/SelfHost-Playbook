@@ -10,6 +10,12 @@
 # to meet your needs.
 # All options have default values, unless specified.
 
+server:
+    # Use this variable set the time zone of the the server and constainers.
+    # If not set, the containers will use the server timezone.
+    # Valid values: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: Etc/UTC
+
 # General containers config
 containers:
     # Absolut path the folder that will contain all the data of the containers.

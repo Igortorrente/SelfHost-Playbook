@@ -10,3 +10,8 @@
     name: systemd-networkd.service
     enabled: true
   become: true
+
+- name: Set server timezone.
+  community.general.timezone:
+    name: "{{ server['timezone'] }}"
+  become: true
