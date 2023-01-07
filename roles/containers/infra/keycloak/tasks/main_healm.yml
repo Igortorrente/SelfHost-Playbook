@@ -63,6 +63,20 @@
     quick_login_check_milli_seconds: 1000
     minimum_quick_login_wait_seconds: 60
     password_policy: "passwordHistory(3) and length(10) and notUsername(undefined) and notEmail(undefined) and maxLength(64) and upperCase(1) and lowerCase(1)"
+    ######## Mail server config ########
+    smtp_server:
+      starttls: "{{ true if services_mail['enabled'] and services_mail['smtp_securty'] == 'starttls' else false }}"
+      ssl: "{{ true if services_mail['enabled'] and services_mail['smtp_securty'] == 'tls' else false }}"
+      port: "{{ services_mail['smtp_port'] if services_mail['enabled'] else 25 }}"
+      host: "{{ services_mail['smtp_host'] if services_mail['enabled'] else '' }}"
+      auth: "true"
+      user: "{{ services_mail['smtp_name'] + '@' + services_mail['mail_domain'] if services_mail['enabled'] else '' }}"
+      password: "{{ services_mail['smtp_password'] if services_mail['enabled'] else '' }}"
+      from: "{{ services_mail['smtp_name'] + '@' + services_mail['mail_domain'] if services_mail['enabled'] else '' }}"
+      fromDisplayName: "{{ services_mail['mail_domain'] + ' services' if services_mail['enabled'] else '' }}"
+      #replyTo:
+      #replyToDisplayName:
+      #envelopeFrom: "postmaster@example.com"
     attributes:
         realmReusableOtpCode: "false"
     state: present
