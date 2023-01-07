@@ -1,0 +1,68 @@
+---
+- name: Create or update the Keycloak realm.
+  community.general.keycloak_realm:
+    ######## Authentication credentials ########
+    auth_client_id: admin-cli
+    auth_keycloak_url: https://accounts.{{ server['network']['domain_name'] }}
+    validate_certs: "{{ nginx_proxy['certbot']['enabled'] }}"
+    auth_username: "{{ keycloak['admin'] }}"
+    auth_password: "{{ keycloak['admin_password'] }}"
+    auth_realm: master
+    ######## Realm config ########
+    realm: "{{ keycloak['realm_name'] }}"
+    id: "{{ keycloak['realm_name'] }}"
+    display_name: "{{ keycloak['realm_name'] }} realm"
+    display_name_html: "{{ keycloak['realm_name'] }} realm"
+    enabled: true
+    ######## Login screen customization ########
+    remember_me: true
+    registration_allowed: false
+    reset_password_allowed: true
+    ######## Login Email settings ########
+    registration_email_as_username: false
+    login_with_email_allowed: true
+    duplicate_emails_allowed: false
+    verify_email: false
+    ######## User info settings ########
+    edit_username_allowed: false
+    ######## Themes ########
+    #account_theme:
+    #admin_theme:
+    #email_theme:
+    #login_theme:
+    ######## Internationalization ########
+    internationalization_enabled: true
+    supported_locales:
+      - pt-BR
+      - en
+      - es
+    default_locale: en
+    ######## Events ########
+    events_enabled: true
+    events_expiration: 2592000 # 30 days
+    events_listeners:
+      - jboss-logging
+      - email
+    admin_events_enabled: true
+    admin_events_details_enabled: false
+    ######## OTP ########
+    otp_policy_type: totp
+    otp_policy_algorithm: HmacSHA256
+    otp_policy_initial_counter: 0
+    otp_policy_digits: 8
+    otp_policy_look_ahead_window: 1
+    otp_policy_period: 30
+    #otp_supported_applications:
+    ######## Brute force protection ########
+    brute_force_protected: true
+    failure_factor: 30
+    permanent_lockout: false
+    wait_increment_seconds: 60
+    max_failure_wait_seconds: 1800 # 30 min
+    max_delta_time_seconds: 43200 # 12 hours
+    quick_login_check_milli_seconds: 1000
+    minimum_quick_login_wait_seconds: 60
+    password_policy: "passwordHistory(3) and length(10) and notUsername(undefined) and notEmail(undefined) and maxLength(64) and upperCase(1) and lowerCase(1)"
+    attributes:
+        realmReusableOtpCode: "false"
+    state: present
