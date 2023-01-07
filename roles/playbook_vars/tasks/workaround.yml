@@ -47,3 +47,7 @@
 - name: Var nextcloud_admin_password.
   ansible.builtin.set_fact:
     nextcloud_admin_password: "{{ password_gen }}"
+
+- name: Var nextcloud_client_secret.
+  ansible.builtin.set_fact:
+    nextcloud_client_secret: "{{ keycloak_client_secret_gen }}"

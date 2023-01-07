@@ -1,0 +1,38 @@
+---
+- name: Install user_oidc backend.
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: php occ app:enable user_oidc
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: app_enablement
+  changed_when: "'user_oidc already enabled' not in app_enablement.stdout"
+  failed_when: app_enablement.rc != 0
+
+- name: Check if user_oidc is configured.
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: php occ user_oidc:provider
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: cmd
+  changed_when: |
+    ("No providers configured" in cmd.stdout) or
+    (' ' + nextcloud['OIDC']['client_id'] + ' ' not in cmd.stdout)
+  failed_when: false
+  notify: Configure user_oidc app
+
+- name: Flush 'Configure user_oidc app' handle
+  ansible.builtin.meta: flush_handlers
+
+- name: Checks if multiple user backends is disabled.
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: php occ config:app:get user_oidc allow_multiple_user_backends
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: allow_multiple_user_backends
+  notify: Disables multiple user backends
+  changed_when: (app_enablement.stdout != '0') or (allow_multiple_user_backends.rc != 0)
+  failed_when: false
+  when: nextcloud['OIDC']['allow_multiple_user_backends'] is true
