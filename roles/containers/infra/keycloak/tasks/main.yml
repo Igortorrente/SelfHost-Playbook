@@ -70,3 +70,13 @@
       KC_LOG_FILE: /var/log/keycloak.log
       TZ: "{{ server['timezone'] }}"
     docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+
+- name: Waits for keycloak.
+  ansible.builtin.wait_for:
+    host: "{{ containers['loopback_network_address'] }}"
+    port: 10500
+    delay: 30
+    timeout: 60
+
+- name: Include task create main healm.
+  ansible.builtin.include_tasks: main_healm.yml
