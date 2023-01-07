@@ -102,3 +102,7 @@
 
 - name: Include apps management tasks.
   ansible.builtin.include_tasks: apps_management.yml
+
+- name: Include Open ID connect config tasks.
+  ansible.builtin.include_tasks: oidc_config.yml
+  when: nextcloud['OIDC']['enabled']
