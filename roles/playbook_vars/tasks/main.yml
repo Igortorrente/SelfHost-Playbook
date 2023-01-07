@@ -81,13 +81,18 @@
         postgres_user: "{{ mailu['roundcube']['postgres_user'] | default('roundcube') }}"
         postgres_password: "{{ mailu['roundcube']['postgres_password'] | default(roundcube_postgres_password) }}"
         db_name: "{{ mailu['roundcube']['db_name'] | default('roundcube_db') }}"
+      OIDC:
+        enabled: "{{ mailu['OIDC']['enabled'] | default(true) if mailu['enabled'] else false }}"
+        client_id: "{{ mailu['OIDC']['client_id'] | default('mailu') }}"
+        client_secret: "{{ mailu['OIDC']['client_secret'] | default(mailu_client_secret) }}"
+        button_name: "{{ mailu['OIDC']['button_name'] | default('Connect with Accounts Example.com') }}"
       fetchmail: "{{ mailu['fetchmail'] | default(false) }}"
       clamav: "{{ mailu['clamav'] | default(false) }}"
 
 - name: Sets up the keycloak fact and generate keycloak passwords if needed.
   ansible.builtin.set_fact:
     keycloak:
-      enabled: "{{ keycloak['enabled'] | default(true) }}"
+      enabled: "{{ mailu['OIDC']['enabled'] }}"
       container_version: "{{ keycloak['container_version'] | default('26.1') }}"
       realm_name: "{{ keycloak['realm_name'] | default('main') }}"
       postgres_user: "{{ keycloak['postgres_user'] | default('keycloak') }}"

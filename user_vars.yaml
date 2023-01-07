@@ -110,7 +110,6 @@ admin_wireguard:
 # Keycloak is open source identity and access management that can
 # provide Oauth2 and OpenID server for some services.
 keycloak:
-    enabled: true
     # https://quay.io/repository/keycloak/keycloak?tab=tags
     container_version: 26.1
     # The keycloak admin username.
@@ -169,6 +168,17 @@ mailu:
         #postgres_password:
         # roundcube database name in postgres.
         db_name: roundcube_db
+    # Set information about the client.
+    # Check https://www.oauth.com/oauth2-servers/definitions/
+    # for more information.
+    OIDC:
+      enabled: true
+      # OIDC client identification
+      client_id: mailu
+      # OIDC client secret
+      #client_secret:
+      # Text in the OIDC button at login screen
+      button_name: Connect with Accounts Example.com
     # Automatic email retrieval (from 3rd-party servers).
     # Enables or disable fetchmail
     fetchmail: false

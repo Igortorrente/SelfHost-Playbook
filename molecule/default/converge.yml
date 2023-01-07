@@ -8,3 +8,4 @@
     testing_env: true
     password_gen: "{{ lookup('ansible.builtin.password', '/dev/null length=12 chars=ascii_letters,digits', seed='MgUCBPCvtwk') }}"
     mailu_secret_key_gen: "{{ lookup('ansible.builtin.password', '/dev/null length=16 chars=ascii_uppercase,digits', seed='Q8707SHI6C8') }}"
+    keycloak_client_secret_gen: "{{ lookup('ansible.builtin.password', '/dev/null length=64 chars=ascii_uppercase,digits', seed='SsEsp60I') }}"
