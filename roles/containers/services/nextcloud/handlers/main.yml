@@ -54,3 +54,29 @@
   register: notify_push_configure
   #changed_when: "'installed: false' in notify_push_configure.stdout"
   failed_when: notify_push_configure.rc != 0
+
+- name: Configure user_oidc app
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: >
+      php occ user_oidc:provider
+      --clientid=nextcloud
+      --clientsecret={{ nextcloud['OIDC']['client_secret'] }}
+      --discoveryuri=https://accounts.{{ server['network']['domain_name'] }}/realms/{{ keycloak['realm_name'] }}/.well-known/openid-configuration
+      --unique-uid=0
+      --mapping-uid=preferred_username
+      --no-interaction --
+      {{ nextcloud['OIDC']['identifier'] }}
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: user_oidc
+  failed_when: user_oidc.rc != 0
+
+- name: Disables multiple user backends
+  community.docker.docker_container_exec:
+    container: nextcloud-fpm
+    command: php occ config:app:set --value=0 user_oidc allow_multiple_user_backends
+    user: www-data
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
+  register: allow_multiple_user_backends
+  failed_when: allow_multiple_user_backends.rc != 0

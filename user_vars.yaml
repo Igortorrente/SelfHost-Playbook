@@ -252,6 +252,23 @@ nextcloud:
     # Enables/disabled the high performance files backend for
     # nextcloud
     notify_push: true
+    # Set information about the client.
+    # Check https://www.oauth.com/oauth2-servers/definitions/
+    # for more information.
+    OIDC:
+        enabled: true
+        # OIDC client identification
+        client_id: nextcloud
+        # OIDC client secret
+        #client_secret:
+        # The name used by nextcloud user_oicd app to select the OIDC provider
+        identifier: keycloak
+        # When enable, this option will configure nextcloud user_oidc app
+        # to always redirect the user to the keycloak login screen instead
+        # the default nextcloud login.
+        # You can access the nextcloud login screen using this URL
+        # https://{{ server['network']['domain_name'] }}/login?direct=1
+        allow_multiple_user_backends: true
     # The list of Nextcloud app that will be installed and enabled.
     # If you do not set this variable, no app will be installed.
     enable_apps:

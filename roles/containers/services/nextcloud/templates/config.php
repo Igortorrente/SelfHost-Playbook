@@ -43,7 +43,10 @@ $CONFIG = array (
   'default_phone_region' => '{{ nextcloud["phone_region"] }}',
   'default_language' => '{{ nextcloud["default_language"] }}',
   'auth.webauthn.enabled' => false,
+{% if nextcloud['OIDC']['enabled'] is true %}
   'allow_local_remote_servers' => true,
+  'allow_user_to_change_display_name' => false,
+{% endif %}
 {% if services_mail['enabled'] is true %}
   'mail_smtpmode' => 'smtp',
 {% if services_mail["smtp_securty"] == 'starttls' %}
