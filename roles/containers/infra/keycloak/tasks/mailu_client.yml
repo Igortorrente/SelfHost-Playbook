@@ -1,0 +1,55 @@
+---
+- name: Create or update a Keycloak mailu client.
+  community.general.keycloak_client:
+    ######## Authentication credentials ########
+    auth_client_id: admin-cli
+    auth_keycloak_url: https://accounts.{{ server['network']['domain_name'] }}
+    validate_certs: "{{ nginx_proxy['certbot']['enabled'] }}"
+    auth_username: "{{ keycloak['admin'] }}"
+    auth_password: "{{ keycloak['admin_password'] }}"
+    auth_realm: master
+    realm: "{{ keycloak['realm_name'] }}"
+    ######## General Settings ########
+    enabled: true
+    client_id: "{{ mailu['OIDC']['client_id'] }}"
+    name: "{{ mailu['OIDC']['client_id'] }}"
+    description: Mailu client using user_oidc app.
+    always_display_in_console: true
+    protocol: openid-connect
+    ######## Access settings ########
+    root_url: https://mail.{{ server['network']['domain_name'] }}
+    base_url: https://mail.{{ server['network']['domain_name'] }}
+    redirect_uris:
+      - /sso/login
+      - /sso/login/oidc
+      - /sso/logout
+    web_origins:
+      - /*
+    admin_url: https://mail.{{ server['network']['domain_name'] }}
+    ######## Capability config ########
+    public_client: true
+    standard_flow_enabled: true
+    implicit_flow_enabled: false
+    direct_access_grants_enabled: false
+    service_accounts_enabled: true
+    ######## Login settings ########
+    consent_required: false
+    authorization_services_enabled: false
+    ######## Logout settings ########
+    frontchannel_logout: false
+    ######## Credentials ########
+    client_authenticator_type: client-secret
+    secret: "{{ mailu['OIDC']['client_secret'] }}"
+    ######## Revocation ########
+    not_before: "{{ ansible_date_time.epoch | default(0) }}"
+    attributes:
+      client.secret.creation.time: "{{ ansible_date_time.epoch | default(0) }}"
+      ######## Logout settings ########
+      backchannel.logout.session.required: "true"
+      backchannel.logout.url: https://mail.{{ server['network']['domain_name'] }}/sso/logout
+      post.logout.redirect.uris: /sso/logout
+      ######## Login settings ########
+      display.on.consent.screen: "false"
+      #login_theme: ""
+      #consent.screen.text:
+    state: present

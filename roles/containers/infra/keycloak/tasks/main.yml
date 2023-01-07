@@ -80,3 +80,7 @@
 
 - name: Include task create main healm.
   ansible.builtin.include_tasks: main_healm.yml
+
+- name: Include task to create and setup mailu OIDC client.
+  ansible.builtin.include_tasks: mailu_client.yml
+  when: mailu['OIDC']['enabled']

@@ -31,3 +31,7 @@
 - name: Var mailu_secret_key.
   ansible.builtin.set_fact:
     mailu_secret_key: "{{ mailu_secret_key_gen }}"
+
+- name: Var mailu_client_secret.
+  ansible.builtin.set_fact:
+    mailu_client_secret: "{{ keycloak_client_secret_gen }}"
