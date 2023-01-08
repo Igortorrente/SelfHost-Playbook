@@ -171,6 +171,11 @@
       container_version: "{{ dns['container_version'] | default('9.19') }}"
       AAAA_records: "{{ dns['AAAA_records'] | default(true) }}"
 
+- name: Sets up the ssh fact.
+  ansible.builtin.set_fact:
+    ssh_hardening:
+      enabled: "{{ ssh_hardening['enabled'] | default(false) }}"
+
 - name: Set fact with a list with all ssl domains.
   ansible.builtin.set_fact:
     ssl_domains_list: "{{ ssl_domains_list | default([]) + [item.domain] }}"
