@@ -12,6 +12,9 @@
     # passwords in case of anything goes wrong
     - role: roles/instalation_info
 
+    - role: roles/system/ssh_hardening
+      when: ssh_hardening['enabled']
+
     - role: roles/system/basic/
 
     - role: roles/system/vim
