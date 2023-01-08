@@ -312,6 +312,9 @@ vaultwarden:
     # specific organization
     invitation_org_name: "{{ server['network']['domain_name'] }}"
 
+ssh_hardening:
+    enabled: false
+
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
 # be executed.
