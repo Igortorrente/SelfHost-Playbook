@@ -177,6 +177,19 @@
     ssh_hardening:
       enabled: "{{ ssh_hardening['enabled'] | default(false) }}"
 
+- name: Sets up the unattended-upgrades fact.
+  ansible.builtin.set_fact:
+    unattended_upgrades:
+      enabled: "{{ unattended_upgrades['enabled'] | default(false) }}"
+      auto_fix_interrupted_dpkg: "{{ unattended_upgrades['auto_fix_interrupted_dpkg'] | default(true) }}"
+      install_on_shutdown: "{{ unattended_upgrades['install_on_shutdown'] | default(false) }}"
+      remove_unused_kernel_packages: "{{ unattended_upgrades['remove_unused_kernel_packages'] | default(false) }}"
+      remove_new_unused_dependencies: "{{ unattended_upgrades['remove_new_unused_dependencies'] | default(false) }}"
+      remove_unused_dependencies: "{{ unattended_upgrades['remove_unused_dependencies'] | default(false) }}"
+      automatic_reboot: "{{ unattended_upgrades['automatic_reboot'] | default(false) }}"
+      dl_limit: "{{ unattended_upgrades['dl_limit'] | default(512) }}"
+      allow_downgrade: "{{ unattended_upgrades['allow_downgrade'] | default(false) }}"
+
 - name: Set fact with a list with all ssl domains.
   ansible.builtin.set_fact:
     ssl_domains_list: "{{ ssl_domains_list | default([]) + [item.domain] }}"
