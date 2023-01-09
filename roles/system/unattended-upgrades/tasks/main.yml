@@ -1,0 +1,16 @@
+---
+- name: Ensure unattended-upgrades is installed.
+  ansible.builtin.apt:
+    pkg: unattended-upgrades
+    state: present
+  become: true
+
+- name: Copy unattended-upgrades to its respective place.
+  ansible.builtin.template:
+    src: 50unattended-upgrades
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart unattended-upgrades service
+  become: true
