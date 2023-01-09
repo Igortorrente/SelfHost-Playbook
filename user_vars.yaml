@@ -315,6 +315,27 @@ vaultwarden:
 ssh_hardening:
     enabled: false
 
+# Install and configures unattended-upgrades
+unattended_upgrades:
+    enabled: true
+    # Control if on a unclean dpkg exit unattended-upgrades will automatically run
+    # dpkg --force-confold --configure -a
+    auto_fix_interrupted_dpkg: true
+    # Install all updates when the machine is shutting down
+    install_on_shutdown: false
+    # Remove unused automatically installed kernel-related packages
+    remove_unused_kernel_packages: false
+    # Do automatic removal of newly unused dependencies after the upgrade
+    remove_new_unused_dependencies: false
+    # Do automatic removal of unused packages after the upgrade
+    remove_unused_dependencies: false
+    # Automatically reboot *WITHOUT CONFIRMATION* if necessary
+    automatic_reboot: false
+    # Use apt bandwidth limit feature (kb/sec)
+    dl_limit: 512
+    # Allow package downgrade if Pin-Priority exceeds 1000
+    allow_downgrade: false
+
 # List of optional roles.
 # If you set as false, the role and related tasks in other roles will not
 # be executed.
