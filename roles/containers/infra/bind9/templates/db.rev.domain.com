@@ -24,6 +24,9 @@ $TTL    259200
 {{ ipv4_part[3] }}     IN      PTR     autoconfig.{{ mailu["mail_domain"] }}.
 {{ ipv4_part[3] }}     IN      PTR     autodiscover.{{ mailu["mail_domain"] }}.
 {% endif %}
+{% if nextcloud['enabled'] is defined %}
+{{ ipv4_part[3] }}     IN      PTR     {{ server['network']['domain_name'] }}.
+{% endif %}
 
 ; also list other computers
 ;21      IN      PTR     box.example.com.
