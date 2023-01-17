@@ -28,10 +28,10 @@ accounts             IN      A       {{ server['network']['ipv4'] }}
 www.account          IN      A       {{ server['network']['ipv4'] }}
 {% endif %}
 {% if mailu['enabled'] is defined %}
-mail                 IN      A       {{ server_ipv4 }}
-www.mail             IN      A       {{ server_ipv4 }}
-autoconfig           IN      A       {{ server_ipv4 }}
-autodiscover         IN      A       {{ server_ipv4 }}
+mail                 IN      A       {{ server['network']['ipv4'] }}
+www.mail             IN      A       {{ server['network']['ipv4'] }}
+autoconfig           IN      A       {{ server['network']['ipv4'] }}
+autodiscover         IN      A       {{ server['network']['ipv4'] }}
 {% endif %}
 {% endif %}
 
