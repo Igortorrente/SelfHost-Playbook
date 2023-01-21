@@ -1,0 +1,7 @@
+---
+collections:
+  - name: community.general
+  - name: community.postgresql
+  - name: community.docker
+  - name: ansible.utils
+  - name: containers.podman
