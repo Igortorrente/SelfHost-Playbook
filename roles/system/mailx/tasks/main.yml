@@ -1,0 +1,21 @@
+---
+- name: Ensure bsd-mailx is installed.
+  ansible.builtin.apt:
+    pkg:
+      - ssmtp
+      - bsd-mailx
+    state: present
+  become: true
+
+- name: Copy unattended-upgrades to its respective place.
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0600
+  become: true
+  loop:
+    - { src: ssmtp.conf, dest: /etc/ssmtp/ssmtp.conf }
+    - { src: revaliases, dest: /etc/ssmtp/revaliases }
+    - { src: mailrc, dest: /root/.mailrc }

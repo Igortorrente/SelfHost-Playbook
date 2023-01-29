@@ -77,6 +77,9 @@
     - role: roles/containers/services/vaultwarden
       when: vaultwarden['enabled']
 
+    - role: roles/system/mailx
+      when: unattended_upgrades['mail_enabled']
+
     - role: roles/system/fail2ban
       when: optional_roles['fail2ban']
 

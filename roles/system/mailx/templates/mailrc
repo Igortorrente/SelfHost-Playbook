@@ -1,0 +1,19 @@
+{% if services_mail["smtp_securty"] == 'starttls' %}
+set smtp-use-starttls
+{% elif services_mail["smtp_securty"] == 'tls' %}
+#set smtp-use-starttls
+{% endif %}
+{% if nginx_proxy['certbot']['enabled'] is false %}
+set ssl-verify=ignore
+{% else %}
+#set ssl-verify=ignore
+{% endif %}
+set smtp=smtp://mail.{{ server['network']['domain_name'] }}:{{ services_mail["smtp_port"] }}
+{% if services_mail['smtp_auth_type'] == 'login' %}
+set smtp-auth=login
+{% else %}
+set smtp-auth=plain
+{% endif %}
+set smtp-auth-user={{ services_mail['smtp_name'] }}@{{ services_mail['mail_domain'] }}
+set smtp-auth-password={{ services_mail["smtp_password"] }}
+set from="{{ services_mail['smtp_name'] }}@{{ services_mail['mail_domain'] }}"
