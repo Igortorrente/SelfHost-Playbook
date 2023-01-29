@@ -181,6 +181,8 @@
   ansible.builtin.set_fact:
     unattended_upgrades:
       enabled: "{{ unattended_upgrades['enabled'] | default(false) }}"
+      mail_enabled: "{{ true if services_mail['enabled'] and unattended_upgrades['receiver_mail'] is defined else false }}"
+      receiver_mail: "{{ unattended_upgrades['receiver_mail'] | default('') }}"
       auto_fix_interrupted_dpkg: "{{ unattended_upgrades['auto_fix_interrupted_dpkg'] | default(true) }}"
       install_on_shutdown: "{{ unattended_upgrades['install_on_shutdown'] | default(false) }}"
       remove_unused_kernel_packages: "{{ unattended_upgrades['remove_unused_kernel_packages'] | default(false) }}"

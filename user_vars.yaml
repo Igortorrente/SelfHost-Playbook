@@ -320,6 +320,10 @@ ssh_hardening:
 # Install and configures unattended-upgrades
 unattended_upgrades:
     enabled: true
+    # Email that will receive the notifications produces by unattended-upgrades
+    # ** This will only take effect if services email enabled **
+    # Ex:
+    # receiver_mail: "{{ mailu['postmaster'] }}@{{ mailu['mail_domain'] }}"
     # Control if on a unclean dpkg exit unattended-upgrades will automatically run
     # dpkg --force-confold --configure -a
     auto_fix_interrupted_dpkg: true

@@ -91,13 +91,19 @@ Unattended-Upgrade::InstallOnShutdown "{{ unattended_upgrades['install_on_shutdo
 // If empty or unset then no email is sent, make sure that you
 // have a working mail setup on your system. A package that provides
 // 'mailx' must be installed. E.g. "user@example.com"
-// Unattended-Upgrade::Mail "";
+{% if unattended_upgrades['mail_enabled'] is true %}
+Unattended-Upgrade::Mail "{{ unattended_upgrades['receiver_mail'] }}";
+Unattended-Upgrade::Sender "{{ server['network']['domain_name'] }} bot <{{ services_mail['smtp_name'] }}@{{ services_mail['mail_domain'] }}>";
+{% else %}
+Unattended-Upgrade::Mail "";
+Unattended-Upgrade::Sender "";
+{% endif %}
 
 // Set this value to one of:
 //    "always", "only-on-error" or "on-change"
 // If this is not set, then any legacy MailOnlyOnError (boolean) value
 // is used to chose between "only-on-error" and "on-change"
-//Unattended-Upgrade::MailReport "on-change";
+Unattended-Upgrade::MailReport "on-change";
 
 // Remove unused automatically installed kernel-related packages
 // (kernel images, kernel headers and kernel version locked tools).
