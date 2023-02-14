@@ -20,6 +20,7 @@
   loop:
     - { src: vaultwarden-admin.conf, enabled: "{{ vaultwarden['enabled'] }}" }
     - { src: vaultwarden.conf, enabled: "{{ vaultwarden['enabled'] }}" }
+    - { src: bad-auth-bots.conf, enabled: "{{ mailu['enabled'] }}" }
 
 - name: Copy all .local to their respective place.
   ansible.builtin.template:
@@ -34,3 +35,4 @@
   loop:
     - { src: vaultwarden-admin.local, enabled: "{{ vaultwarden['enabled'] }}" }
     - { src: vaultwarden.local, enabled: "{{ vaultwarden['enabled'] }}" }
+    - { src: bad-auth-bots.conf, enabled: "{{ mailu['enabled'] }}" }
