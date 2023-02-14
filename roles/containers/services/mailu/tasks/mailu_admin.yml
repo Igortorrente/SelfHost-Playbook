@@ -27,6 +27,9 @@
         source: "{{ containers['data_dir'] }}/mailu/mail/dkim"
         target: /dkim
         type: bind
+    log_driver: journald
+    log_options:
+      tag: mailu-admin
     state: started
     restart_policy: unless-stopped
     env_file: "{{ containers['config_dir'] }}/mailu/mailu.env"
