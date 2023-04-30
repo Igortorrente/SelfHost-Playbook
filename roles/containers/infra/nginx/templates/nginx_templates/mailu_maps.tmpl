@@ -1,5 +1,14 @@
 map $request_uri $mailu_loggable {
-    /health 0;
     /auth/email 0;
     default 1;
+}
+
+map $http_x_forwarded_proto $proxy_x_forwarded_proto {
+    default $http_x_forwarded_proto;
+    ''      $scheme;
+}
+
+map $uri $mailu_expires {
+    default off;
+    ~*\.(ico|css|js|gif|jpeg|jpg|png|woff2?|ttf|otf|svg|tiff|eot|webp)$ 97d;
 }

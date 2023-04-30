@@ -69,6 +69,7 @@
         enabled: "{{ admin_wireguard['enabled'] and keycloak['enabled'] }}" }
     - { src: nginx_proxy/conf.d/mailu.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: "{{ mailu['enabled'] }}" }
     - { src: nginx_proxy/conf.d/mailu.mail.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: "{{ mailu['enabled'] }}" }
+    - { src: nginx_proxy/conf.d/mailu.stream.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: "{{ mailu['enabled'] }}" }
     - { src: nginx_templates/mailu_maps.tmpl, dest: "{{ containers['config_dir'] }}/nginx-proxy/templates/", enabled: "{{ mailu['enabled'] }}" }
     - { src: nginx_proxy/conf.d/nextcloud.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/", enabled: "{{ nextcloud['enabled'] }}" }
     - { src: nginx_proxy/conf.d/collabora-online.http.conf, dest: "{{ containers['config_dir'] }}/nginx-proxy/conf.d/",
@@ -94,6 +95,7 @@
     - { port: '993:993', enabled: "{{ mailu['enabled'] }}" }
     - { port: '10025:10025', enabled: "{{ mailu['enabled'] }}" }
     - { port: '10143:10143', enabled: "{{ mailu['enabled'] }}" }
+    - { port: '14190:14190', enabled: "{{ mailu['enabled'] }}" }
   when: item.enabled|bool
 
 - name: Include self-signed certficate generation tasks.
