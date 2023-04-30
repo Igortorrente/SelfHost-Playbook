@@ -1,7 +1,7 @@
 ---
 - name: Inspect the mailu-admin image.
   community.docker.docker_image_info:
-    name: mailu/admin:OpenID
+    name: mailu/admin:v2.0.10
     docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
   register: mailu_admin
 
@@ -12,7 +12,7 @@
 - name: Make sure the mailu-admin container is running.
   community.docker.docker_container:
     name: mailu-admin
-    image: mailu/admin:OpenID
+    image: mailu/admin:v2.0.10
     networks:
       - name: container-network
     dns_servers: "{{ mailu_dns }}"

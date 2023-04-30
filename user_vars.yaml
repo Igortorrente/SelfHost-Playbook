@@ -131,8 +131,8 @@ keycloak:
 # Mail server
 mailu:
     enabled: true
-    # https://hub.docker.com/u/mailu
-    container_version: 1.9
+    # https://github.com/orgs/Mailu/packages?repo_name=Mailu
+    container_version: 2.0
     # mailu postgres admin username. This user will be used
     # to setup and access the postgres database for mailu.
     postgres_user: mailu
@@ -144,6 +144,11 @@ mailu:
     mail_domain: "{{ server['network']['domain_name'] }}"
     # Random 16 bytes string used by mailu.
     #secret_key:
+    # Enable the RESTful API
+    rest_api_enabled: true
+    # API token required for authenticating to the RESTful API.
+    # 32 uppercase ASCII chars and digits.
+    # api_token:
     # The admin user account.
     # It also used as user for DMARC RUA/RUF.
     # The value here will concatenated with '@{{ mailu['mail_domain'] }}'

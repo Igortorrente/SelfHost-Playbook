@@ -2,7 +2,7 @@
 - name: Make sure the fetchmail container is running.
   community.docker.docker_container:
     name: fetchmail
-    image: "mailu/fetchmail:{{ mailu['container_version'] }}"
+    image: "ghcr.io/mailu/fetchmail:{{ mailu['container_version'] }}"
     user: '1300:1300'
     networks:
       - name: container-network

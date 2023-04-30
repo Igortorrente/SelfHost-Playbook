@@ -29,7 +29,7 @@ $config['imap_log'] = true;
 $config['smtp_log'] = true;
 
 // log driver:  'syslog', 'stdout' or 'file'.
-$config['log_driver'] = 'file';
+#$config['log_driver'] = 'file';
 
 // Log successful/failed logins to <log_dir>/userlogins.log or to syslog
 $config['log_logins'] = true;
@@ -242,19 +242,3 @@ $rcmail_config['tb_label_modify_labels'] = true;
 $rcmail_config['tb_label_style'] = "bullets";
 // custom hidden flags
 $rcmail_config['tb_label_hidden_flags'] = array();
-
-// ----------------------------------
-//  MANAGESIEVE PLUGIN
-// ----------------------------------
-
-// Managesieve server host (and optional port). Default: localhost.
-// Replacement variables supported in host name:
-// %h - user's IMAP hostname
-// %n - http hostname ($_SERVER['SERVER_NAME'])
-// %d - domain (http hostname without the first part)
-// For example %n = mail.domain.tld, %d = domain.tld
-// If port is omitted it will be determined automatically using getservbyname()
-// function, with 4190 as a fallback.
-// Note: Add tls:// prefix to enable TLS
-$config['managesieve_host'] = 'dovecot';
-

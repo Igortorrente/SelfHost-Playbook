@@ -2,7 +2,7 @@
 - name: Make sure the dovecot container is running.
   community.docker.docker_container:
     name: dovecot
-    image: "mailu/dovecot:{{ mailu['container_version'] }}"
+    image: "ghcr.io/mailu/dovecot:{{ mailu['container_version'] }}"
     networks:
       - name: container-network
     dns_servers: "{{ mailu_dns }}"
@@ -10,6 +10,7 @@
     ports:
       - "{{ containers['loopback_network_address'] }}:10152:143"
       - "{{ containers['loopback_network_address'] }}:10153:110"
+      - "{{ containers['loopback_network_address'] }}:10154:4190"
     mounts:
       - # mailu dir
         source: "{{ containers['data_dir'] }}/mailu/mail/"

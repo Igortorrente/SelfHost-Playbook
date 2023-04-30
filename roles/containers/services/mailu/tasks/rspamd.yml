@@ -2,7 +2,7 @@
 - name: Make sure the rspamd container is running.
   community.docker.docker_container:
     name: rspamd
-    image: "mailu/rspamd:{{ mailu['container_version'] }}"
+    image: "ghcr.io/mailu/rspamd:{{ mailu['container_version'] }}"
     networks:
       - name: container-network
     dns_servers: "{{ mailu_dns }}"

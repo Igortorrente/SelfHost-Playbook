@@ -2,7 +2,7 @@
 - name: Make sure the roundcube container is running.
   community.docker.docker_container:
     name: roundcube
-    image: "mailu/roundcube:{{ mailu['container_version'] }}"
+    image: "ghcr.io/mailu/webmail:{{ mailu['container_version'] }}"
     networks:
       - name: container-network
     dns_servers: "{{ mailu_dns }}"

@@ -9,7 +9,7 @@
   ansible.builtin.git:
     repo: https://github.com/Igortorrente/Mailu-OpenID.git
     dest: "{{ mailu_admin_temp.path }}"
-    version: lorenzo_openid
+    version: v2.0.10
 
 - name: Builds mailu base image.
   community.docker.docker_image:
@@ -35,7 +35,7 @@
 
 - name: Builds mailu-admin image.
   community.docker.docker_image:
-    name: mailu/admin:OpenID
+    name: mailu/admin:v2.0.10
     build:
       path: "{{ mailu_admin_temp.path }}/core/admin"
       rm: yes

@@ -34,14 +34,13 @@
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    owner: "{{ item.owner_group | default(ansible_user_uid) }}"
-    group: "{{ item.owner_group | default(ansible_user_gid) }}"
-    mode: 0600
+    owner: "{{ item.owner | default(ansible_user_uid) }}"
+    group: "{{ item.group | default(ansible_user_gid) }}"
+    mode: 0644
   become: true
   loop:
     - { src: mailu.env, dest: "{{ containers['config_dir'] }}/mailu/", enabled: true }
-    #TODO: change www-data:www-data ASA https://github.com/containers/ansible-podman-collections/pull/455
-    - { src: roundcube.config.inc.php, owner_group: 100032,
+    - { src: roundcube.config.inc.php,
         dest: "{{ containers['config_dir'] }}/mailu/overrides/roundcube/config.php",
         enabled: "{{ mailu['roundcube']['enabled'] }}" }
   when: item.enabled|bool is true

@@ -72,6 +72,8 @@
       db_name: "{{ mailu['db_name'] | default('mailu_db') }}"
       mail_domain: "{{ mailu['mail_domain'] | default(server['network']['domain_name']) }}"
       secret_key: "{{ mailu['secret_key'] | default(mailu_secret_key) }}"
+      rest_api_enabled: "{{ mailu['rest_api_enabled'] | default(true) }}"
+      api_token: "{{ mailu['api_token'] | default(mailu_api_token_gen) }}"
       postmaster: "{{ mailu['postmaster'] | default('admin') }}"
       postmaster_password: "{{ mailu['postmaster_password'] | default(mailu_postmaster_password) }}"
       site_name: "{{ mailu['site_name'] | default('Example') }}"

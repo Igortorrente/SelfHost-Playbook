@@ -2,7 +2,7 @@
 - name: Make sure the postfix container is running.
   community.docker.docker_container:
     name: postfix
-    image: "mailu/postfix:{{ mailu['container_version'] }}"
+    image: "ghcr.io/mailu/postfix:{{ mailu['container_version'] }}"
     networks:
       - name: container-network
     dns_servers: "{{ mailu_dns }}"
