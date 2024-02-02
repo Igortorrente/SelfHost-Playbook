@@ -33,3 +33,15 @@
     state: directory
     mode: 0740
   when: nginx_proxy['certbot']['enabled'] is true
+
+- name: Ensure systemd-timesyncd is installed.
+  ansible.builtin.apt:
+    pkg: systemd-timesyncd
+    state: present
+  become: true
+
+- name: Ensures the systemd-timesyncd is enabled.
+  ansible.builtin.systemd:
+    name: systemd-timesyncd.service
+    enabled: true
+  become: true
