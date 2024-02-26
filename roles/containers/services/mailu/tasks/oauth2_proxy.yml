@@ -1,0 +1,18 @@
+---
+- name: Make sure the oauth2-proxy container is running.
+  community.docker.docker_container:
+    name: oauth2-proxy
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    networks:
+      - name: container-network
+    etc_hosts: "{{ containers_etc_hosts }}"
+    ports: "{{ containers['loopback_network_address'] }}:10110:4180"
+    mounts:
+      - # Config file
+        source: "{{ containers['config_dir'] }}/oauth2-proxy/oauth2-proxy.cfg"
+        target: /etc/oauth2-proxy.cfg
+        type: bind
+    command: --config=/etc/oauth2-proxy.cfg --oidc-extra-audience "sub,account,email,groups,name,family_name,given_name" --show-debug-on-error --set-xauthrequest true --skip-jwt-bearer-tokens true --pass-access-token true
+    state: started
+    restart_policy: unless-stopped
+    docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock

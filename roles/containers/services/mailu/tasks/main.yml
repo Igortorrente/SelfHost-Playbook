@@ -15,6 +15,7 @@
     - { path: "{{ containers['config_dir'] }}/mailu/overrides/dovecot", mode: '0700', enabled: true }
     - { path: "{{ containers['config_dir'] }}/mailu/overrides/roundcube", mode: '0700',
         enabled: "{{ mailu['roundcube']['enabled'] }}" }
+    - { path: "{{ containers['config_dir'] }}/oauth2-proxy/", mode: '0700', enabled: true }
     - { path: "{{ containers['data_dir'] }}/mailu/", mode: '0700', enabled: true }
     - { path: "{{ containers['data_dir'] }}/mailu/mailqueue", mode: '0755', enabled: true }
     - { path: "{{ containers['data_dir'] }}/mailu/filter", mode: '0700', enabled: true }
@@ -43,7 +44,13 @@
     - { src: roundcube.config.inc.php,
         dest: "{{ containers['config_dir'] }}/mailu/overrides/roundcube/config.php",
         enabled: "{{ mailu['roundcube']['enabled'] }}" }
+    #TODO: change 65532:65532 ASA https://github.com/containers/ansible-podman-collections/pull/455
+    - { src: oauth2-proxy.cfg, owner: 165531, group: 165531,
+        dest: "{{ containers['config_dir'] }}/oauth2-proxy/", enabled: true }
   when: item.enabled|bool is true
+
+- name: Include oauth2-proxy tasks.
+  ansible.builtin.include_tasks: oauth2_proxy.yml
 
 - name: Include mailu-admin tasks.
   ansible.builtin.include_tasks: mailu_admin.yml

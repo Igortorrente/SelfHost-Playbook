@@ -20,9 +20,7 @@
     root_url: https://mail.{{ server['network']['domain_name'] }}
     base_url: https://mail.{{ server['network']['domain_name'] }}
     redirect_uris:
-      - /sso/login
-      - /sso/login/oidc
-      - /sso/logout
+      - /oauth2/callback
     web_origins:
       - /*
     admin_url: https://mail.{{ server['network']['domain_name'] }}
