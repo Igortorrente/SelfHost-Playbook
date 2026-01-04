@@ -273,9 +273,9 @@
             <locking desc="Locking settings">
                 <refresh desc="How frequently we should re-acquire a lock with the storage server, in seconds (default 15 mins) or 0 for no refresh" type="int" default="900">900</refresh>
             </locking>
-            <host  allow="true">"{{ server['network']['domain_name'] }}"</host>
             <alias_groups desc="default mode is 'first' it allows only the first host when groups are not defined. set mode to 'groups' and define group to allow multiple host and its aliases" mode="first">
-                <host desc="hostname to allow or deny." allow="true">https://{{ server['network']['domain_name'] }}/</host>
+                <host desc="hostname to allow or deny." allow="true">https://collaboraonline.{{ server['network']['domain_name'] }}/</host>
+                <alias desc="regex pattern of aliasname">https://{{ server['network']['domain_name'] }}/</alias>
                 <!-- If you need to use multiple wopi hosts, please change the mode to "groups" and
                         add the hosts below.  If one host is accessible under multiple ip addresses
                         or names, add them as aliases. -->
@@ -330,12 +330,12 @@
     </cache_files>
 
     <extra_export_formats desc="Enable various extra export formats for additional compatibility. Note that disabling options here *only* disables them visually: these are all 'safe' to export, it might just be undesirable to show them, so you can't disable exporting these server-side">
-        <impress_swf desc="Enable exporting Adobe flash .swf files from presentations" type="bool" default="false">false</impress_swf>
-        <impress_bmp desc="Enable exporting .bmp bitmap files from presentation slides" type="bool" default="false">false</impress_bmp>
+        <impress_swf desc="Enable exporting Adobe flash .swf files from presentations" type="bool" default="false">true</impress_swf>
+        <impress_bmp desc="Enable exporting .bmp bitmap files from presentation slides" type="bool" default="false">true</impress_bmp>
         <impress_gif desc="Enable exporting .gif image files from presentation slides" type="bool" default="false">true</impress_gif>
         <impress_png desc="Enable exporting .png image files from presentation slides" type="bool" default="false">true</impress_png>
-        <impress_svg desc="Enable exporting interactive .svg image files from presentations" type="bool" default="false">false</impress_svg>
-        <impress_tiff desc="Enable exporting .tiff image files from presentation slides" type="bool" default="false">false</impress_tiff>
+        <impress_svg desc="Enable exporting interactive .svg image files from presentations" type="bool" default="false">true</impress_svg>
+        <impress_tiff desc="Enable exporting .tiff image files from presentation slides" type="bool" default="false">true</impress_tiff>
     </extra_export_formats>
 
     <serverside_config>
